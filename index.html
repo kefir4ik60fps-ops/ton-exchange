@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Купить TON — Аналог Paybis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-2">Купить <span class="text-blue-500">The Open Network (TON)</span></h1>
+        <p class="text-slate-400 text-lg">Быстрый обмен USD на TON по лучшему курсу</p>
+    </div>
+
+    <div class="glass-card w-full max-w-md p-6 rounded-3xl shadow-2xl">
+        
+        <div class="mb-4">
+            <label class="block text-sm text-slate-400 mb-2">Вы тратите</label>
+            <div class="relative flex items-center bg-slate-800 rounded-2xl p-4 border border-transparent focus-within:border-blue-500 transition">
+                <input type="number" id="usdInput" value="100" class="bg-transparent text-2xl font-semibold outline-none w-full" placeholder="0.00">
+                <div class="flex items-center gap-2 ml-2 bg-slate-700 px-3 py-1 rounded-xl">
+                    <img src="https://img.icons8.com/color/48/usa-circular.png" class="w-6 h-6" alt="USD">
+                    <span class="font-bold text-sm">USD</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center -my-3 relative z-10">
+            <div class="bg-blue-600 p-2 rounded-full border-4 border-[#0f172a] cursor-pointer hover:bg-blue-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="mb-6 mt-1">
+            <label class="block text-sm text-slate-400 mb-2">Вы получаете</label>
+            <div class="relative flex items-center bg-slate-800 rounded-2xl p-4 border border-transparent focus-within:border-blue-500 transition">
+                <input type="number" id="tonOutput" class="bg-transparent text-2xl font-semibold outline-none w-full" placeholder="0.00">
+                <div class="flex items-center gap-2 ml-2 bg-slate-700 px-3 py-1 rounded-xl">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-6 h-6" alt="TON">
+                    <span class="font-bold text-sm">TON</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/50 rounded-xl p-3 mb-6 flex justify-between items-center text-sm">
+            <span class="text-slate-400">Текущий курс:</span>
+            <span id="currentRate" class="font-mono text-blue-400 tracking-wider text-xs">Загрузка курса...</span>
+        </div>
+
+        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/20 active:scale-95">
+            Купить TON сейчас
+        </button>
+    </div>
+
+    <p class="mt-6 text-slate-500 text-sm">Данные обновляются в реальном времени через CoinGecko API</p>
+
+    <script>
+        const usdInput = document.getElementById('usdInput');
+        const tonOutput = document.getElementById('tonOutput');
+        const rateDisplay = document.getElementById('currentRate');
+
+        let tonPriceUsd = 0;
+
+        // 1. Функция получения цены TON через API
+        async function fetchPrice() {
+            try {
+                // Используем бесплатное API CoinGecko
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+                const data = await response.json();
+                tonPriceUsd = data['the-open-network'].usd;
+                
+                rateDisplay.innerText = `1 TON ≈ ${tonPriceUsd.toFixed(2)} USD`;
+                calculateTon(); // Считаем сразу после загрузки
+            } catch (error) {
+                rateDisplay.innerText = "Ошибка загрузки курса";
+                console.error("Ошибка:", error);
+            }
+        }
+
+        // 2. Логика расчета TON из USD
+        function calculateTon() {
+            const usdValue = parseFloat(usdInput.value);
+            if (!isNaN(usdValue) && tonPriceUsd > 0) {
+                tonOutput.value = (usdValue / tonPriceUsd).toFixed(4);
+            } else {
+                tonOutput.value = "";
+            }
+        }
+
+        // 3. Логика расчета USD из TON (обратный расчет)
+        function calculateUsd() {
+            const tonValue = parseFloat(tonOutput.value);
+            if (!isNaN(tonValue) && tonPriceUsd > 0) {
+                usdInput.value = (tonValue * tonPriceUsd).toFixed(2);
+            } else {
+                usdInput.value = "";
+            }
+        }
+
+        // Слушатели событий ввода
+        usdInput.addEventListener('input', calculateTon);
+        tonOutput.addEventListener('input', calculateUsd);
+
+        // Обновляем курс каждые 30 секунд
+        fetchPrice();
+        setInterval(fetchPrice, 30000);
+    </script>
+</body>
+</html>
