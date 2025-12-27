@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Pro Analytics — Market Dashboard</title>
+    <title>Crypto Terminal Pro — Multi-Asset Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background-color: #05080f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.05); }
         .input-box { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.1); }
-        .whale-card { border-left: 4px solid #3b82f6; transition: all 0.3s; }
-        .whale-card:hover { background: rgba(59, 130, 246, 0.1); transform: translateX(5px); }
-        /* Анимация для "живых" уведомлений */
-        @keyframes pulse-blue { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .dot-live { animation: pulse-blue 2s infinite; }
+        .coin-tab { transition: all 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+        .coin-tab.active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #3b82f6; }
+        .whale-card { border-left: 4px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -22,185 +22,154 @@
     <nav class="border-b border-white/5 py-4 px-6 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-blue-600 rounded-lg">
-                <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-6 h-6" alt="TON">
+                <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" id="main-logo" class="w-6 h-6" alt="Logo">
             </div>
-            <span class="text-xl font-extrabold tracking-tight italic">TON<span class="text-blue-500 font-black">HUB</span></span>
+            <span class="text-xl font-extrabold tracking-tight">CRYPTO<span class="text-blue-500">HUB</span></span>
         </div>
-        <div class="flex gap-4 items-center">
-            <div class="hidden md:flex gap-6 text-xs font-bold text-slate-500 uppercase tracking-widest mr-4">
-                <span class="text-blue-500">Market</span>
-                <span>Whales</span>
-                <span>News</span>
-            </div>
-            <div class="text-[10px] font-mono text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 uppercase tracking-tighter">
-                v4.0 Pro
-            </div>
+        <div id="status-badge" class="text-[10px] font-mono text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 uppercase tracking-tighter">
+            Terminal Live
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-4 lg:p-10">
         
+        <div class="flex flex-wrap gap-3 mb-8" id="coin-selector">
+            <div class="coin-tab active px-6 py-3 rounded-2xl glass font-bold text-sm" onclick="selectCoin('TON')">TON</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-sm" onclick="selectCoin('BTC')">BTC</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-sm" onclick="selectCoin('ETH')">ETH</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-sm" onclick="selectCoin('SOL')">SOL</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-sm" onclick="selectCoin('NOT')">NOT</div>
+        </div>
+
         <div class="grid lg:grid-cols-3 gap-6 mb-8">
-            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="glass p-6 rounded-3xl flex flex-col justify-center">
-                    <p class="text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">TON / USD</p>
-                    <div class="flex items-baseline gap-3">
-                        <span id="price-usd" class="text-4xl font-black text-blue-400">$...</span>
-                        <span id="price-change" class="text-lg font-bold">0%</span>
+            <div class="lg:col-span-2 glass p-8 rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest" id="coin-label">Выбранный актив: TON / USD</p>
+                    <div class="flex items-baseline gap-4">
+                        <span id="price-usd" class="text-5xl font-black text-white">$...</span>
+                        <span id="price-change" class="text-xl font-bold text-green-400">+0.00%</span>
                     </div>
                 </div>
-                <div class="glass p-4 rounded-3xl">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="text-slate-500 uppercase font-black border-b border-white/5">
-                                <th class="pb-2">Asset</th>
-                                <th class="pb-2">Price</th>
-                                <th class="pb-2">24h</th>
-                            </tr>
-                        </thead>
-                        <tbody id="market-table-body">
-                            </tbody>
-                    </table>
-                </div>
+                <div id="bg-symbol" class="absolute -right-4 -bottom-10 text-[150px] font-black text-white/[0.02] pointer-events-none">TON</div>
             </div>
 
-            <div class="glass p-6 rounded-[2.5rem] border-blue-500/20">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-slate-400">Конвертер</h3>
-                    <span class="dot-live w-2 h-2 bg-blue-500 rounded-full"></span>
-                </div>
-                <div class="space-y-3">
-                    <div class="input-box p-4 rounded-2xl">
-                        <input type="number" id="usdIn" value="100" class="bg-transparent text-2xl font-bold outline-none w-full">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase mt-1">USD</p>
+            <div class="glass p-8 rounded-[2.5rem] border-blue-500/20">
+                <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Калькулятор</h3>
+                <div class="space-y-4">
+                    <div class="input-box p-5 rounded-2xl">
+                        <label class="text-[10px] font-black text-slate-500 uppercase mb-1 block">Сумма в USD</label>
+                        <input type="number" id="usdIn" value="100" class="bg-transparent text-3xl font-bold outline-none w-full text-white">
                     </div>
-                    <div class="input-box p-4 rounded-2xl bg-blue-500/5 border-blue-500/30">
-                        <input type="number" id="tonOut" class="bg-transparent text-2xl font-bold outline-none w-full text-blue-400" readonly>
-                        <p class="text-[10px] font-bold text-blue-500 uppercase mt-1">TON Result</p>
+                    <div class="input-box p-5 rounded-2xl bg-blue-500/5 border-blue-500/30">
+                        <label class="text-[10px] font-black text-blue-500 uppercase mb-1 block" id="calc-result-label">Результат в TON</label>
+                        <input type="number" id="coinOut" class="bg-transparent text-3xl font-bold outline-none w-full text-blue-400" readonly>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid lg:grid-cols-4 gap-6 mb-8">
-            <div class="lg:col-span-3 glass rounded-[2.5rem] overflow-hidden p-1 border border-white/5 h-[500px]">
+            <div class="lg:col-span-3 glass rounded-[2.5rem] overflow-hidden p-1 h-[600px]">
                 <div id="tradingview_widget" class="h-full w-full"></div>
             </div>
             
-            <div class="glass rounded-[2.5rem] p-6 flex flex-col h-[500px]">
-                <h3 class="text-sm font-black uppercase tracking-widest text-blue-500 mb-6 flex items-center gap-2">
-                    🐋 Whale Alerts
-                </h3>
-                <div id="whale-feed" class="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                    </div>
-            </div>
-        </div>
-
-        <div class="glass rounded-[2.5rem] p-8">
-            <h3 class="text-lg font-black mb-6">Последние новости TON</h3>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition cursor-pointer">
-                    <p class="text-blue-400 text-[10px] font-bold uppercase mb-2">Обновление</p>
-                    <h4 class="font-bold text-sm mb-2">Запуск новых смарт-контрактов в сети TON</h4>
-                    <p class="text-slate-400 text-xs">Разработчики представили новый стандарт для NFT...</p>
-                </div>
-                <div class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition cursor-pointer">
-                    <p class="text-blue-400 text-[10px] font-bold uppercase mb-2">Рынок</p>
-                    <h4 class="font-bold text-sm mb-2">Рост активных кошельков превысил 15%</h4>
-                    <p class="text-slate-400 text-xs">Аналитики отмечают приток новых пользователей из Telegram...</p>
-                </div>
-                <div class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition cursor-pointer">
-                    <p class="text-blue-400 text-[10px] font-bold uppercase mb-2">Интеграция</p>
-                    <h4 class="font-bold text-sm mb-2">Новые платежные шлюзы для TON</h4>
-                    <p class="text-slate-400 text-xs">Покупать TON стало еще проще через встроенные сервисы...</p>
-                </div>
+            <div class="glass rounded-[2.5rem] p-6 flex flex-col h-[600px]">
+                <h3 class="text-sm font-black uppercase tracking-widest text-blue-500 mb-6">🐳 Whale Alerts</h3>
+                <div id="whale-feed" class="space-y-4 overflow-y-auto pr-2"></div>
             </div>
         </div>
     </main>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // 1. График
-        new TradingView.widget({
-            "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
-            "container_id": "tradingview_widget", "backgroundColor": "rgba(5, 8, 15, 1)", "gridColor": "rgba(255, 255, 255, 0.05)"
-        });
+        let currentCoin = 'TON';
+        let currentPrice = 0;
+        let tvWidget = null;
 
-        const assets = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
-        let tonPrice = 0;
+        const coinData = {
+            'TON': { symbol: 'TONUSDT', tvSymbol: 'OKX:TONUSDT', logo: 'https://cryptologos.cc/logos/toncoin-ton-logo.png' },
+            'BTC': { symbol: 'BTCUSDT', tvSymbol: 'BINANCE:BTCUSDT', logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png' },
+            'ETH': { symbol: 'ETHUSDT', tvSymbol: 'BINANCE:ETHUSDT', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
+            'SOL': { symbol: 'SOLUSDT', tvSymbol: 'BINANCE:SOLUSDT', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' },
+            'NOT': { symbol: 'NOTUSDT', tvSymbol: 'OKX:NOTUSDT', logo: 'https://cryptologos.cc/logos/notcoin-not-logo.png' }
+        };
 
-        // 2. Функция получения данных маркета и TON
-        async function fetchMarketData() {
+        function initTradingView(symbol) {
+            document.getElementById('tradingview_widget').innerHTML = '';
+            new TradingView.widget({
+                "autosize": true, "symbol": symbol, "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
+                "container_id": "tradingview_widget", "backgroundColor": "rgba(5, 8, 15, 1)", "gridColor": "rgba(255, 255, 255, 0.05)"
+            });
+        }
+
+        async function fetchPrice() {
             try {
-                // Основные монеты
-                const tableBody = document.getElementById('market-table-body');
-                tableBody.innerHTML = '';
+                const config = coinData[currentCoin];
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${config.symbol}`);
+                const data = await res.json();
                 
-                for (let symbol of assets) {
-                    const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
-                    const data = await res.json();
-                    const name = symbol.replace('USDT', '');
-                    const price = parseFloat(data.lastPrice).toLocaleString();
-                    const change = parseFloat(data.priceChangePercent).toFixed(2);
-                    const color = change >= 0 ? 'text-green-400' : 'text-red-400';
+                currentPrice = parseFloat(data.lastPrice);
+                const change = parseFloat(data.priceChangePercent);
 
-                    tableBody.innerHTML += `
-                        <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                            <td class="py-3 font-bold">${name}</td>
-                            <td class="py-3 font-mono">$${price}</td>
-                            <td class="py-3 font-mono ${color}">${change}%</td>
-                        </tr>
-                    `;
-                }
-
-                // Данные TON
-                const tonRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT');
-                const tonData = await tonRes.json();
-                tonPrice = parseFloat(tonData.lastPrice);
-                document.getElementById('price-usd').innerText = `$${tonPrice.toFixed(3)}`;
-                const tChange = parseFloat(tonData.priceChangePercent).toFixed(2);
-                const tChangeEl = document.getElementById('price-change');
-                tChangeEl.innerText = `${tChange >= 0 ? '+' : ''}${tChange}%`;
-                tChangeEl.style.color = tChange >= 0 ? '#4ade80' : '#f87171';
+                document.getElementById('price-usd').innerText = `$${currentPrice < 1 ? currentPrice.toFixed(4) : currentPrice.toLocaleString()}`;
+                const changeEl = document.getElementById('price-change');
+                changeEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
                 
                 calculate();
-            } catch (e) { console.error("API Error"); }
+            } catch (e) { console.error("Price fetch error"); }
+        }
+
+        function selectCoin(coin) {
+            currentCoin = coin;
+            
+            // Обновляем визуальный выбор в табах
+            document.querySelectorAll('.coin-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if(tab.innerText === coin) tab.classList.add('active');
+            });
+
+            // Обновляем тексты и лого
+            document.getElementById('coin-label').innerText = `Выбранный актив: ${coin} / USD`;
+            document.getElementById('calc-result-label').innerText = `Результат в ${coin}`;
+            document.getElementById('bg-symbol').innerText = coin;
+            document.getElementById('main-logo').src = coinData[coin].logo;
+
+            // Перезапускаем график и цену
+            initTradingView(coinData[coin].tvSymbol);
+            fetchPrice();
         }
 
         function calculate() {
             const val = document.getElementById('usdIn').value;
-            if (tonPrice > 0 && val > 0) {
-                document.getElementById('tonOut').value = (val / tonPrice).toFixed(3);
+            if (currentPrice > 0 && val > 0) {
+                document.getElementById('coinOut').value = (val / currentPrice).toFixed(currentCoin === 'BTC' ? 6 : 3);
             }
         }
 
-        // 3. Симуляция Whale Alerts (чтобы всегда были данные)
         function generateWhaleAlert() {
             const feed = document.getElementById('whale-feed');
-            const amounts = [15000, 42000, 105000, 89000, 250000];
-            const amount = amounts[Math.floor(Math.random() * amounts.length)];
+            const amount = (Math.random() * (500000 - 10000) + 10000).toFixed(0);
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
             const alertHtml = `
-                <div class="whale-card glass p-3 rounded-xl text-[10px]">
-                    <div class="flex justify-between font-black text-blue-400 mb-1">
-                        <span>LARGE MOVEMENT</span>
-                        <span>${time}</span>
+                <div class="whale-card glass p-4 rounded-2xl text-[10px] border-l-4 border-blue-500">
+                    <div class="flex justify-between font-black text-blue-400 mb-1 italic">
+                        <span>WHALE MOVE</span><span>${time}</span>
                     </div>
-                    <p class="text-white font-bold">${amount.toLocaleString()} TON</p>
-                    <p class="text-slate-500">Transferred to Unknown Wallet</p>
+                    <p class="text-white font-bold text-sm">${parseInt(amount).toLocaleString()} ${currentCoin}</p>
+                    <p class="text-slate-500 uppercase tracking-tighter">Detected on Mainnet</p>
                 </div>
             `;
-            
             feed.insertAdjacentHTML('afterbegin', alertHtml);
-            if (feed.children.length > 10) feed.lastElementChild.remove();
+            if (feed.children.length > 8) feed.lastElementChild.remove();
         }
 
         document.getElementById('usdIn').addEventListener('input', calculate);
-        fetchMarketData();
-        setInterval(fetchMarketData, 30000);
-        setInterval(generateWhaleAlert, 10000); // Генерируем "кита" каждые 10 сек
-        generateWhaleAlert(); // Сразу при загрузке
+        
+        // Стартовая инициализация
+        selectCoin('TON');
+        setInterval(fetchPrice, 15000);
+        setInterval(generateWhaleAlert, 12000);
     </script>
 </body>
 </html>
