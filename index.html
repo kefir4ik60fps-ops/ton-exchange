@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Analytics — Мониторинг и Калькулятор</title>
+    <title>TON Analytics Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -13,7 +13,6 @@
     </style>
 </head>
 <body class="min-h-screen">
-
     <nav class="border-b border-white/5 py-4 px-6 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-blue-500 rounded-lg">
@@ -21,9 +20,8 @@
             </div>
             <span class="text-xl font-extrabold tracking-tight">TON<span class="text-blue-500">EX</span></span>
         </div>
-        <div class="flex gap-8 text-sm font-semibold text-slate-400">
-            <span class="hover:text-blue-400 cursor-default">Аналитика</span>
-            <span class="hover:text-blue-400 cursor-default">v3.1 Live</span>
+        <div id="status-badge" class="text-[10px] font-mono text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 animate-pulse uppercase">
+            Система активна
         </div>
     </nav>
 
@@ -31,29 +29,29 @@
         <div class="grid lg:grid-cols-3 gap-8 mb-12">
             <div class="lg:col-span-2 space-y-6">
                 <h1 class="text-5xl font-extrabold leading-tight">Аналитика <span class="text-blue-500">TON.</span></h1>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div class="glass p-4 rounded-2xl">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Цена USD</p>
-                        <p id="price-usd" class="text-2xl font-mono text-blue-400">$0.00</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass p-6 rounded-2xl">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 tracking-widest">Текущая цена</p>
+                        <p id="price-usd" class="text-3xl font-mono text-blue-400 tracking-tighter">$...</p>
                     </div>
-                    <div class="glass p-4 rounded-2xl">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Изменение</p>
-                        <p id="price-change" class="text-2xl font-mono text-green-400">0%</p>
+                    <div class="glass p-6 rounded-2xl">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 tracking-widest">Изменение (24ч)</p>
+                        <p id="price-change" class="text-3xl font-mono text-white tracking-tighter">0%</p>
                     </div>
                 </div>
             </div>
 
-            <div class="glass p-8 rounded-[2.5rem] border-blue-500/20">
+            <div class="glass p-8 rounded-[2.5rem] border-blue-500/20 shadow-2xl">
                 <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
                     <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                     Конвертер
                 </h3>
                 <div class="space-y-4">
                     <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[10px] font-black text-slate-500 uppercase mb-1 block">Сумма в USD</label>
+                        <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Сумма в USD</label>
                         <input type="number" id="usdIn" value="100" class="bg-transparent text-3xl font-bold outline-none w-full text-white">
                     </div>
-                    <div class="input-box p-5 rounded-2xl bg-blue-500/5">
+                    <div class="input-box p-5 rounded-2xl bg-blue-500/5 border-blue-500/30">
                         <label class="text-[10px] font-black text-blue-500 uppercase mb-1 block">Результат в TON</label>
                         <input type="number" id="tonOut" class="bg-transparent text-3xl font-bold outline-none w-full text-blue-400" readonly>
                     </div>
@@ -62,30 +60,58 @@
         </div>
 
         <div class="glass rounded-[3rem] overflow-hidden p-2">
-            <div class="h-[500px] w-full" id="tradingview_widget"></div>
+            <div class="h-[550px] w-full" id="tradingview_widget"></div>
         </div>
     </main>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // Инициализация графика TradingView
         new TradingView.widget({
             "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
             "container_id": "tradingview_widget", "backgroundColor": "rgba(5, 8, 15, 1)", "gridColor": "rgba(255, 255, 255, 0.05)"
         });
 
-        async function fetchStats() {
+        let currentPrice = 0;
+
+        // Новая функция получения цены (через более стабильное API Binance)
+        async function updatePrice() {
             try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd&include_24hr_change=true');
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT');
                 const data = await res.json();
-                const price = data['the-open-network'].usd;
-                const change = data['the-open-network'].usd_24h_change;
-                document.getElementById('price-usd').innerText = `$${price.toFixed(2)}`;
-                document.getElementById('price-change').innerText = `${change.toFixed(2)}%`;
-                document.getElementById('tonOut').value = (document.getElementById('usdIn').value / price).toFixed(3);
-            } catch (e) { console.error("API Limit"); }
+                
+                currentPrice = parseFloat(data.lastPrice);
+                const change = parseFloat(data.priceChangePercent);
+
+                document.getElementById('price-usd').innerText = `$${currentPrice.toFixed(3)}`;
+                
+                const changeEl = document.getElementById('price-change');
+                changeEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
+                
+                calculate(); // Сразу пересчитываем калькулятор
+            } catch (e) {
+                console.error("Ошибка сети");
+                document.getElementById('status-badge').innerText = "ОШИБКА API";
+                document.getElementById('status-badge').classList.replace('text-green-400', 'text-red-400');
+            }
         }
-        document.getElementById('usdIn').addEventListener('input', fetchStats);
-        fetchStats(); setInterval(fetchStats, 30000);
+
+        function calculate() {
+            const val = document.getElementById('usdIn').value;
+            if (currentPrice > 0 && val > 0) {
+                document.getElementById('tonOut').value = (val / currentPrice).toFixed(3);
+            } else {
+                document.getElementById('tonOut').value = "";
+            }
+        }
+
+        // Слушаем изменения в поле ввода
+        document.getElementById('usdIn').addEventListener('input', calculate);
+        
+        // Запускаем обновление данных
+        updatePrice();
+        setInterval(updatePrice, 15000); // Обновляем каждые 15 секунд
     </script>
 </body>
 </html>
