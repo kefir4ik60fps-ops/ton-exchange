@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Terminal Pro — Clean View</title>
+    <title>Crypto Terminal Pro — Clean v6.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -25,68 +25,52 @@
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-2">
             <div class="p-1.5 bg-blue-600 rounded-lg"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" id="main-logo" class="w-5 h-5"></div>
-            <span class="text-lg font-extrabold tracking-tight">CRYPTO<span class="text-blue-500">HUB</span></span>
+            <span class="text-lg font-extrabold tracking-tight">CRYPTO<span class="text-blue-500 font-black">TERMINAL</span></span>
         </div>
-        <div class="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase">
-            Pro v6.1 Live
+        <div class="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">
+            v6.2 Stable
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-4 md:p-8">
         
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-            <div class="glass p-4 rounded-2xl">
-                <p class="text-[9px] text-slate-500 font-black uppercase mb-1">ETH / BTC Ratio</p>
-                <p id="eth-btc-ratio" class="text-lg font-mono text-blue-400">...</p>
-            </div>
-            <div class="glass p-4 rounded-2xl">
-                <p class="text-[9px] text-slate-500 font-black uppercase mb-1">Fear & Greed Index</p>
-                <div class="flex items-center gap-2">
-                    <span id="fg-index" class="text-lg font-mono text-orange-400">65</span>
-                    <span class="text-[9px] text-slate-400 uppercase">Greed</span>
-                </div>
-            </div>
-            <div class="glass p-4 rounded-2xl hidden lg:block">
-                <p class="text-[9px] text-slate-500 font-black uppercase mb-1">Market Sentiment</p>
-                <p class="text-xs font-bold text-slate-300">Bullish Momentum</p>
-            </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-8 pb-2">
+            <div class="coin-tab active px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('TON')">TON</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('BTC')">BTC</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('ETH')">ETH</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('SOL')">SOL</div>
         </div>
 
-        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-2">
-            <div class="coin-tab active px-5 py-2.5 rounded-xl glass font-bold text-xs" onclick="selectCoin('TON')">TON</div>
-            <div class="coin-tab px-5 py-2.5 rounded-xl glass font-bold text-xs" onclick="selectCoin('BTC')">BTC</div>
-            <div class="coin-tab px-5 py-2.5 rounded-xl glass font-bold text-xs" onclick="selectCoin('ETH')">ETH</div>
-            <div class="coin-tab px-5 py-2.5 rounded-xl glass font-bold text-xs" onclick="selectCoin('SOL')">SOL</div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div class="lg:col-span-2 glass p-6 md:p-10 rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden min-h-[180px]">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2 glass p-8 md:p-12 rounded-[3rem] flex flex-col justify-center relative overflow-hidden min-h-[220px]">
                 <div class="relative z-10">
-                    <p class="text-[10px] text-slate-500 font-black uppercase mb-1" id="coin-label">TON / USD</p>
-                    <div class="flex flex-wrap items-baseline gap-3">
-                        <span id="price-usd" class="text-4xl md:text-6xl font-black text-white">$...</span>
-                        <span id="price-change" class="text-base md:text-xl font-bold">+0.00%</span>
+                    <p class="text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest" id="coin-label">TON / USD</p>
+                    <div class="flex flex-wrap items-baseline gap-4">
+                        <span id="price-usd" class="text-5xl md:text-7xl font-black text-white tracking-tighter">$...</span>
+                        <span id="price-change" class="text-xl md:text-2xl font-bold">+0.00%</span>
                     </div>
                 </div>
-                <div id="bg-symbol" class="absolute -right-4 -bottom-6 text-[120px] md:text-[180px] font-black text-white/[0.02] pointer-events-none uppercase">TON</div>
+                <div id="bg-symbol" class="absolute -right-6 -bottom-10 text-[150px] md:text-[220px] font-black text-white/[0.02] pointer-events-none uppercase">TON</div>
             </div>
 
-            <div class="glass p-6 md:p-8 rounded-[2.5rem]">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Быстрый расчет</h3>
-                <div class="space-y-3">
-                    <div class="input-box p-4 rounded-xl">
-                        <label class="text-[9px] text-slate-500 uppercase block mb-1">Сумма в USD</label>
-                        <input type="number" id="usdIn" value="100" class="bg-transparent text-2xl font-bold outline-none w-full">
+            <div class="glass p-8 rounded-[3rem] flex flex-col justify-center">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Быстрый расчет
+                </h3>
+                <div class="space-y-4">
+                    <div class="input-box p-5 rounded-2xl">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold block mb-1">Отдаю USD</label>
+                        <input type="number" id="usdIn" value="100" class="bg-transparent text-3xl font-bold outline-none w-full">
                     </div>
-                    <div class="input-box p-4 rounded-xl bg-blue-500/5">
-                        <label class="text-[9px] text-blue-500 uppercase block mb-1" id="calc-label">Получаю TON</label>
-                        <input type="number" id="coinOut" class="bg-transparent text-2xl font-bold outline-none w-full text-blue-400" readonly>
+                    <div class="input-box p-5 rounded-2xl bg-blue-500/5">
+                        <label class="text-[9px] text-blue-500 uppercase font-bold block mb-1" id="calc-label">Получаю TON</label>
+                        <input type="number" id="coinOut" class="bg-transparent text-3xl font-bold outline-none w-full text-blue-400" readonly>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-[2.5rem] overflow-hidden p-1 h-[450px] md:h-[650px]">
+        <div class="glass rounded-[3rem] overflow-hidden p-1 h-[500px] md:h-[700px] shadow-2xl">
             <div id="tradingview_widget" class="h-full w-full"></div>
         </div>
     </main>
@@ -103,9 +87,8 @@
             'SOL': { symbol: 'SOLUSDT', tv: 'BINANCE:SOLUSDT', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' }
         };
 
-        async function updateMarketInfo() {
+        async function updatePrice() {
             try {
-                // Запрос текущей цены монеты
                 const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinData[currentCoin].symbol}`);
                 const data = await res.json();
                 currentPrice = parseFloat(data.lastPrice);
@@ -115,14 +98,8 @@
                 const chEl = document.getElementById('price-change');
                 chEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
                 chEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
-
-                // Запрос ETH/BTC Ratio
-                const pairRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC');
-                const pairData = await pairRes.json();
-                document.getElementById('eth-btc-ratio').innerText = parseFloat(pairData.price).toFixed(5);
-
                 calculate();
-            } catch (e) { console.error("Data fetch error"); }
+            } catch (e) { console.error("API Error"); }
         }
 
         function selectCoin(coin) {
@@ -132,30 +109,20 @@
             document.getElementById('calc-label').innerText = `Получаю ${coin}`;
             document.getElementById('main-logo').src = coinData[coin].logo;
             
-            // Пересоздаем виджет TradingView
             new TradingView.widget({
-                "autosize": true,
-                "symbol": coinData[coin].tv,
-                "interval": "H",
-                "theme": "dark",
-                "style": "1",
-                "locale": "ru",
-                "container_id": "tradingview_widget",
-                "backgroundColor": "rgba(5, 8, 15, 1)",
-                "gridColor": "rgba(255, 255, 255, 0.05)",
+                "autosize": true, "symbol": coinData[coin].tv, "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
+                "container_id": "tradingview_widget", "backgroundColor": "rgba(5, 8, 15, 1)", "gridColor": "rgba(255, 255, 255, 0.05)",
                 "hide_side_toolbar": true
             });
-            updateMarketInfo();
+            updatePrice();
         }
 
         function calculate() {
             const val = document.getElementById('usdIn').value;
-            if (currentPrice > 0) {
-                document.getElementById('coinOut').value = (val / currentPrice).toFixed(currentCoin === 'BTC' ? 6 : 4);
-            }
+            if (currentPrice > 0) document.getElementById('coinOut').value = (val / currentPrice).toFixed(currentCoin === 'BTC' ? 6 : 4);
         }
 
-        // Анимация падающих монеток на фоне
+        // Падающие монетки
         setInterval(() => {
             const c = document.createElement('img');
             c.src = 'https://cryptologos.cc/logos/toncoin-ton-logo.png';
@@ -168,10 +135,8 @@
         }, 800);
 
         document.getElementById('usdIn').addEventListener('input', calculate);
-        
-        // Первый запуск
         selectCoin('TON');
-        setInterval(updateMarketInfo, 15000);
+        setInterval(updatePrice, 15000);
     </script>
 </body>
 </html>
