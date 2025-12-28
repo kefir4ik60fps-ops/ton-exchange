@@ -66,8 +66,7 @@
                     <label class="text-[10px] text-slate-500 uppercase font-black block mb-2">Введите сумму в USD ($)</label>
                     <input type="number" id="conv-usd" value="500" class="bg-transparent text-4xl font-bold outline-none w-full text-blue-400" oninput="runGlobalConvert()">
                 </div>
-                <div id="conv-results" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    </div>
+                <div id="conv-results" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
@@ -75,7 +74,7 @@
             <div class="max-w-2xl mx-auto glass p-8 rounded-[3rem]">
                 <h3 class="text-2xl font-black uppercase mb-8 text-center italic">Купить <span class="text-blue-500">Крипту</span></h3>
                 <div class="space-y-4">
-                    <select id="shop-coin-select" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm font-bold outline-none" onchange="updateShopRate()">
+                    <select id="shop-coin-select" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm font-bold outline-none text-white" onchange="updateShopRate()">
                         <option value="TON">TON (Toncoin)</option>
                         <option value="BTC">BTC (Bitcoin)</option>
                         <option value="ETH">ETH (Ethereum)</option>
@@ -88,20 +87,22 @@
                         <option value="AVAX">AVAX (Avalanche)</option>
                         <option value="DOT">DOT (Polkadot)</option>
                         <option value="MATIC">MATIC (Polygon)</option>
+                        <option value="NEAR">NEAR (Near Protocol)</option>
+                        <option value="LINK">LINK (Chainlink)</option>
                     </select>
                     <div class="input-box p-5 rounded-2xl">
                         <label class="text-[9px] text-slate-500 uppercase font-black block">Количество монет</label>
-                        <input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()">
+                        <input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full text-white" oninput="updateShopRate()">
                     </div>
                     <div class="input-box p-5 rounded-2xl">
                         <label class="text-[9px] text-blue-500 uppercase font-black block">Твой адрес кошелька</label>
-                        <input type="text" id="shop-wallet" placeholder="Введите адрес..." class="bg-transparent text-xs font-mono outline-none w-full">
+                        <input type="text" id="shop-wallet" placeholder="Введите адрес для получения..." class="bg-transparent text-xs font-mono outline-none w-full text-blue-300">
                     </div>
                     <div class="text-center p-4 bg-white/5 rounded-xl">
                         <div id="shop-total" class="text-3xl font-black text-green-400">0.00 грн</div>
-                        <p class="text-[8px] text-slate-500 uppercase mt-1">Комиссия 7.5% уже включена</p>
+                        <p class="text-[8px] text-slate-500 uppercase mt-1 italic">Комиссия 7.5%</p>
                     </div>
-                    <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-xs uppercase shadow-2xl">Отправить заявку 🚀</button>
+                    <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-xs uppercase shadow-2xl text-white">Отправить заявку 🚀</button>
                 </div>
             </div>
         </div>
@@ -110,7 +111,7 @@
             <div class="glass p-12 rounded-[4rem] max-w-2xl mx-auto">
                 <h2 class="text-5xl font-black mb-4 uppercase italic">Lotto <span class="text-blue-500">2026</span></h2>
                 <div id="box-anim" class="text-9xl my-10 cursor-pointer">🎁</div>
-                <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Играть за 350 грн</button>
+                <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl text-white">Играть за 350 грн</button>
                 <p class="mt-4 text-[10px] text-yellow-500 font-black uppercase tracking-widest">Шанс: 0.1%</p>
             </div>
         </div>
@@ -119,15 +120,15 @@
     <div id="deposit-modal" class="fixed inset-0 bg-black/95 z-[200] hidden items-center justify-center p-4">
         <div class="glass p-8 rounded-[3rem] max-w-sm w-full text-center">
             <h3 class="text-xl font-black uppercase mb-6 text-blue-500">Пополнение</h3>
-            <input type="number" id="dep-input" value="100" class="input-box p-4 rounded-xl w-full text-xl font-bold mb-4 outline-none">
-            <div class="flex gap-2 mb-6">
-                <button onclick="showDetails('Card')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600">Карта</button>
-                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600">Кошелек</button>
+            <input type="number" id="dep-input" value="100" class="input-box p-4 rounded-xl w-full text-xl font-bold mb-4 outline-none text-white">
+            <div class="flex gap-2 mb-6 text-white">
+                <button onclick="showDetails('Card')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all">Карта</button>
+                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all">Кошелек</button>
             </div>
             <div id="pay-details" class="hidden bg-blue-500/10 p-4 rounded-2xl mb-6 text-left">
-                <p id="details-val" class="text-[10px] font-mono break-all bg-black/40 p-2 rounded select-all"></p>
+                <p id="details-val" class="text-[10px] font-mono break-all bg-black/40 p-2 rounded select-all text-white"></p>
             </div>
-            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Я оплатил</button>
+            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase text-white">Я оплатил</button>
             <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Назад</button>
         </div>
     </div>
@@ -148,7 +149,7 @@
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price');
                 const data = await res.json();
-                const symbols = ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'XRPUSDT', 'TRXUSDT', 'LTCUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT'];
+                const symbols = ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'XRPUSDT', 'TRXUSDT', 'LTCUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT', 'NEARUSDT', 'LINKUSDT'];
                 data.forEach(item => {
                     if(symbols.includes(item.symbol)) {
                         rates[item.symbol.replace('USDT', '')] = parseFloat(item.price);
@@ -162,6 +163,7 @@
         function runGlobalConvert() {
             const usd = parseFloat(document.getElementById('conv-usd').value) || 0;
             const container = document.getElementById('conv-results');
+            if(!container) return;
             container.innerHTML = "";
             Object.keys(rates).forEach(coin => {
                 const amount = usd / rates[coin];
@@ -176,7 +178,8 @@
         function updateShopRate() {
             const coin = document.getElementById('shop-coin-select').value;
             const qty = parseFloat(document.getElementById('shop-qty').value) || 0;
-            const uahPrice = rates[coin] * 42.5 * 1.075; // Курс + твоя комиссия 7.5%
+            if(!rates[coin]) return;
+            const uahPrice = rates[coin] * 42.5 * 1.075;
             document.getElementById('shop-total').innerText = (qty * uahPrice).toFixed(2) + " грн";
         }
 
@@ -197,9 +200,17 @@
 
         function confirmDeposit() {
             const amt = document.getElementById('dep-input').value;
-            sendToAdmin(`💰 ДЕПОЗИТ!\nСумма: ${amt} грн\nПроверь оплату!`);
+            sendToAdmin(`💰 НОВЫЙ ДЕПОЗИТ!\nСумма: ${amt} грн\nПроверь карту/кошелек и зачисли через админку!`);
             closeModal('deposit-modal');
-            alert("Запрос отправлен админу. Ожидай подтверждения.");
+            alert("Запрос отправлен! Ожидайте подтверждения.");
+        }
+
+        function adminAction() {
+            const pass = prompt("Введите пароль админа:");
+            if (pass === "1234") {
+                const add = parseFloat(prompt("Сколько грн зачислить на баланс?"));
+                if (!isNaN(add)) { balance += add; updateUI(); }
+            }
         }
 
         function processFinalPurchase() {
@@ -208,13 +219,13 @@
             const wallet = document.getElementById('shop-wallet').value;
             const uahPrice = rates[coin] * 42.5 * 1.075 * qty;
 
-            if (balance < uahPrice) return alert("Недостаточно грн на балансе!");
-            if (wallet.length < 5) return alert("Введите кошелек!");
+            if (balance < uahPrice) return alert("Недостаточно грн!");
+            if (wallet.length < 5) return alert("Введите адрес!");
 
             balance -= uahPrice;
             updateUI();
             sendToAdmin(`🛒 КУПИЛИ КРИПТУ!\nМонета: ${coin}\nКол-во: ${qty}\nАдрес: ${wallet}\nСписано: ${uahPrice.toFixed(2)} грн`);
-            alert("Заявка принята! Админ отправит крипту в течение 15 минут.");
+            alert("Заявка принята! Отправим крипту в течение 15 минут.");
         }
 
         function playLotto() {
@@ -225,24 +236,11 @@
             setTimeout(() => {
                 box.classList.remove('shake');
                 const r = Math.random() * 100;
-                let win = 0;
-                // Твой секретный шанс 0.0000001
-                if (r <= 0.000001) win = 25000;
-                else if (r <= 5.0) win = 2500;
-                else win = 275;
-
+                let win = (r <= 0.000001) ? 25000 : (r <= 5.0 ? 2500 : 275);
                 balance += win; updateUI();
                 alert(`Выигрыш: ${win} грн! Зачислено.`);
                 sendToAdmin(`🎉 ВЫИГРЫШ!\nСумма: ${win} грн\nБаланс юзера: ${balance.toFixed(2)} грн`);
             }, 2000);
-        }
-
-        function adminAction() {
-            const pass = prompt("Введите пароль админа:");
-            if (pass === "1234") {
-                const add = parseFloat(prompt("Сколько грн начислить на баланс?"));
-                if (add) { balance += add; updateUI(); }
-            }
         }
 
         function showTab(tab) {
