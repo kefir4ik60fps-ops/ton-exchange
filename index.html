@@ -2,91 +2,197 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>My Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Terminal Pro — 2026 Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-color: #0e1621; /* Темная тема как в ТГ */
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
-        /* Боковая панель с чатами */
-        .sidebar {
-            width: 300px;
-            border-right: 1px solid #17212b;
-            background: #17212b;
-        }
-        .chat-item {
-            padding: 15px;
-            border-bottom: 1px solid #0e1621;
-            cursor: pointer;
-        }
-        .chat-item:hover { background: #2b5278; }
-
-        /* Окно чата */
-        .main-chat {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .messages {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .message {
-            background: #182533;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            max-width: 60%;
-        }
-        /* Поле ввода */
-        .input-area {
-            padding: 20px;
-            background: #17212b;
-            display: flex;
-        }
-        input {
-            flex-grow: 1;
-            background: #0e1621;
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            outline: none;
-        }
-        button {
-            background: #2b5278;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin-left: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #05080f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.05); }
+        .input-box { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .buy-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s; }
+        .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
+        .coin-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
+        #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .snowflake { position: absolute; top: -20px; color: white; animation: fall linear infinite; opacity: 0.4; }
+        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="min-h-screen pb-20">
 
-    <div class="sidebar">
-        <div class="chat-item"><b>Избранное</b></div>
-        <div class="chat-item"><b>OSINT Group</b></div>
-        <div class="chat-item"><b>Проекты</b></div>
-    </div>
+    <div id="snow-bg"></div>
 
-    <div class="main-chat">
-        <div class="messages">
-            <div class="message">Привет! Это твой мессенджер. Код обновлен.</div>
-            <div class="message">Что добавим дальше?</div>
+    <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="p-1.5 bg-blue-600 rounded-lg shadow-lg"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5"></div>
+            <span class="text-lg font-extrabold italic">TON<span class="text-blue-500">TERMINAL</span></span>
         </div>
-        <div class="input-area">
-            <input type="text" placeholder="Напиши сообщение...">
-            <button>Отправить</button>
+        <div class="flex flex-col items-center">
+            <span class="text-[7px] uppercase font-black text-slate-500 tracking-widest">До Нового 2026 Года:</span>
+            <div id="countdown" class="text-xs font-mono font-bold text-yellow-500">00:00:00</div>
         </div>
-    </div>
+        <div class="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 uppercase font-bold">Stable v7.5</div>
+    </nav>
 
+    <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
+        
+        <div class="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
+            <button onclick="selectCoin('TON')" class="coin-tab active px-6 py-2 rounded-xl glass text-[10px] font-bold uppercase transition-all">TON</button>
+            <button onclick="selectCoin('BTC')" class="coin-tab px-6 py-2 rounded-xl glass text-[10px] font-bold uppercase transition-all">BTC</button>
+            <button onclick="selectCoin('ETH')" class="coin-tab px-6 py-2 rounded-xl glass text-[10px] font-bold uppercase transition-all">ETH</button>
+            <button onclick="selectCoin('SOL')" class="coin-tab px-6 py-2 rounded-xl glass text-[10px] font-bold uppercase transition-all">SOL</button>
+            <button onclick="selectCoin('NOT')" class="coin-tab px-6 py-2 rounded-xl glass text-[10px] font-bold uppercase transition-all">NOT</button>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2 glass p-10 rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden">
+                <p class="text-[10px] text-slate-500 font-black uppercase mb-1 tracking-widest" id="coin-label">TON / USD</p>
+                <div class="flex items-baseline gap-4">
+                    <span id="price-usd" class="text-5xl md:text-7xl font-black text-white tracking-tighter">$...</span>
+                    <span id="price-change" class="text-xl font-bold">+0.00%</span>
+                </div>
+                <div id="bg-symbol" class="absolute -right-6 -bottom-10 text-[180px] font-black text-white/[0.03] pointer-events-none uppercase italic">TON</div>
+            </div>
+
+            <div class="glass p-8 rounded-[3rem]">
+                <h3 class="text-[10px] font-black uppercase text-slate-500 mb-6 flex items-center gap-2">💎 Быстрый обмен</h3>
+                <div class="space-y-4">
+                    <div class="input-box p-4 rounded-xl">
+                        <label class="text-[9px] text-slate-500 uppercase font-black block mb-1">Сумма в USD</label>
+                        <input type="number" id="usdIn" value="100" class="bg-transparent text-2xl font-bold outline-none w-full">
+                    </div>
+                    <div class="input-box p-4 rounded-xl bg-blue-500/5">
+                        <label class="text-[9px] text-blue-500 uppercase font-bold block mb-1" id="calc-label">Получаю TON</label>
+                        <input type="number" id="coinOut" class="bg-transparent text-2xl font-bold outline-none w-full text-blue-400" readonly>
+                    </div>
+                    <button onclick="window.open('https://t.me/CryptoBot')" class="buy-btn w-full py-4 rounded-xl font-black text-xs uppercase text-white shadow-lg">Купить в Crypto Bot 🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-1 glass p-8 rounded-[2.5rem]">
+                <h3 class="text-[10px] font-black uppercase text-yellow-500 mb-4 tracking-widest">🔍 OSINT Wallet Tracker</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="walletInput" placeholder="Адрес TON..." class="input-box p-4 rounded-xl bg-white/5 border-none text-[10px] font-mono flex-grow outline-none">
+                    <button onclick="checkWallet()" class="bg-blue-600 px-4 rounded-xl">🔎</button>
+                </div>
+                <div id="walletResult" class="hidden mt-4 p-4 bg-white/5 rounded-xl text-[10px] font-mono text-blue-300 border border-white/5"></div>
+            </div>
+
+            <div class="lg:col-span-2 glass p-8 rounded-[2.5rem]">
+                <h3 class="text-[10px] font-black uppercase text-green-500 mb-6 tracking-widest">🚀 Лидеры роста (24h)</h3>
+                <div id="gainers-list" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            </div>
+        </div>
+
+        <div class="glass rounded-[3rem] overflow-hidden p-1 h-[600px]">
+            <div id="tradingview_widget" class="h-full w-full"></div>
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        let currentCoin = 'TON';
+        let currentPrice = 0;
+
+        function updateTimer() {
+            const diff = new Date('January 1, 2026 00:00:00').getTime() - new Date().getTime();
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById('countdown').innerHTML = `${d}д ${h}ч ${m}м ${s}с`;
+        }
+        setInterval(updateTimer, 1000);
+
+        setInterval(() => {
+            const s = document.createElement('div'); s.className = 'snowflake'; s.innerHTML = '❄';
+            s.style.left = Math.random() * 100 + 'vw'; s.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            const dur = Math.random() * 6 + 4; s.style.animationDuration = dur + 's';
+            document.getElementById('snow-bg').appendChild(s); setTimeout(() => s.remove(), dur * 1000);
+        }, 400);
+
+        async function updateMarket() {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+                const allData = await res.json();
+                const watchlist = ['BTCUSDT', 'ETHUSDT', 'TONUSDT', 'SOLUSDT', 'NOTUSDT'];
+                const filtered = allData.filter(d => watchlist.includes(d.symbol));
+                
+                const current = filtered.find(d => d.symbol === (currentCoin === 'NOT' ? 'NOTUSDT' : currentCoin + 'USDT'));
+                if (current) {
+                    currentPrice = parseFloat(current.lastPrice);
+                    document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
+                    
+                    const ch = parseFloat(current.priceChangePercent);
+                    const chEl = document.getElementById('price-change');
+                    chEl.innerText = `${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%`;
+                    chEl.style.color = ch >= 0 ? '#4ade80' : '#f87171';
+                }
+
+                const gList = document.getElementById('gainers-list');
+                gList.innerHTML = '';
+                filtered.sort((a, b) => b.priceChangePercent - a.priceChangePercent).forEach(coin => {
+                    const name = coin.symbol.replace('USDT', '');
+                    gList.innerHTML += `
+                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5 text-center">
+                            <p class="text-[8px] font-black text-slate-500 mb-1">${name}</p>
+                            <p class="text-xs font-bold text-green-400">+${parseFloat(coin.priceChangePercent).toFixed(1)}%</p>
+                        </div>`;
+                });
+                calculate();
+            } catch (e) { console.log("Market error"); }
+        }
+
+        async function checkWallet() {
+            const addr = document.getElementById('walletInput').value;
+            const res = document.getElementById('walletResult');
+            if(!addr) return;
+            res.classList.remove('hidden'); res.innerText = "Scanning Blockchain...";
+            try {
+                const r = await fetch(`https://toncenter.com/api/v2/getAddressInformation?address=${addr}`);
+                const d = await r.json();
+                if(d.ok) res.innerHTML = `Balance: ${(d.result.balance / 1000000000).toFixed(2)} TON<br>Status: ${d.result.state}`;
+                else res.innerText = "Error: Invalid Address";
+            } catch (e) { res.innerText = "API Busy..."; }
+        }
+
+        function calculate() {
+            const val = parseFloat(document.getElementById('usdIn').value);
+            if (currentPrice > 0) document.getElementById('coinOut').value = (val / currentPrice).toFixed(4);
+        }
+
+        function selectCoin(c) {
+            currentCoin = c;
+            // Обновляем UI
+            document.getElementById('coin-label').innerText = `${c} / USD`;
+            document.getElementById('calc-label').innerText = `Получаю ${c}`;
+            document.getElementById('bg-symbol').innerText = c;
+            
+            document.querySelectorAll('.coin-tab').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === c) btn.classList.add('active');
+            });
+
+            // Перезагрузка графика
+            new TradingView.widget({
+                "autosize": true, 
+                "symbol": c === 'NOT' ? 'OKX:NOTUSDT' : (c === 'TON' ? 'OKX:TONUSDT' : `BINANCE:${c}USDT`), 
+                "interval": "H", 
+                "theme": "dark",
+                "container_id": "tradingview_widget", 
+                "backgroundColor": "rgba(5, 8, 15, 1)", 
+                "gridColor": "rgba(255, 255, 255, 0.05)", 
+                "hide_side_toolbar": true
+            });
+            updateMarket();
+        }
+
+        document.getElementById('usdIn').addEventListener('input', calculate);
+        selectCoin('TON');
+        setInterval(updateMarket, 10000);
+    </script>
 </body>
 </html>
