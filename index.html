@@ -3,52 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Terminal 2026 — Happy New Year!</title>
+    <title>Crypto Terminal 2026 — Analytics & Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background-color: #05080f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.05); }
         .input-box { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); }
         
-        /* Праздничные градиенты */
-        .festive-btn { background: linear-gradient(135deg, #CE1713 0%, #D5B534 100%); transition: all 0.3s; }
-        .festive-btn:hover { transform: scale(1.03); box-shadow: 0 0 25px rgba(206, 23, 19, 0.5); }
-        .coin-tab.active { background: rgba(213, 181, 52, 0.2); border: 1px solid #D5B534; color: #D5B534; }
+        /* Праздничная кнопка */
+        .buy-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s; }
+        .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+        .coin-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
         
-        /* Стили для снега */
+        /* Снег */
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .snowflake { position: absolute; top: -20px; color: white; user-select: none; pointer-events: none; animation: fall linear infinite; }
+        .snowflake { position: absolute; top: -20px; color: white; animation: fall linear infinite; opacity: 0.5; }
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
-<body class="min-h-screen pb-10 relative">
+<body class="min-h-screen pb-10">
 
     <div id="snow-bg"></div>
 
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <div class="p-1.5 bg-red-600 rounded-lg shadow-lg shadow-red-600/20">
-                <span class="text-lg">🎅</span>
+                <span class="text-lg">🎄</span>
             </div>
-            <span class="text-lg font-extrabold tracking-tight italic">CRYPTO<span class="text-red-500 font-black">2026</span></span>
+            <span class="text-lg font-extrabold tracking-tight italic">TON<span class="text-red-500 font-black">2026</span></span>
         </div>
-        <div class="flex flex-col items-end">
-            <div class="text-[9px] font-mono text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20 uppercase font-bold">
-                Happy New Year!
-            </div>
-            <div class="text-[8px] text-slate-500 mt-0.5">Bull Market Awaits 🚀</div>
+        
+        <div class="flex flex-col items-center">
+            <span class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-0.5">До 2026 года осталось:</span>
+            <div id="countdown" class="text-xs md:text-sm font-mono font-bold text-yellow-500">00:00:00:00</div>
+        </div>
+
+        <div class="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase">
+            Live
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
         
-        <div class="flex gap-2 overflow-x-auto mb-8 pb-2 no-scrollbar">
+        <div class="flex gap-2 overflow-x-auto mb-6 pb-2 no-scrollbar">
             <div class="coin-tab active px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('TON')">TON</div>
             <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('BTC')">BTC</div>
             <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('ETH')">ETH</div>
@@ -67,65 +69,89 @@
                 <div id="bg-symbol" class="absolute -right-6 -bottom-10 text-[150px] md:text-[220px] font-black text-white/[0.03] pointer-events-none uppercase italic">2026</div>
             </div>
 
-            <div class="glass p-8 rounded-[3rem] flex flex-col justify-center border-red-500/10">
+            <div class="glass p-8 rounded-[3rem] border-white/5">
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
-                    🎄 Новогодний расчет
+                    🔄 Быстрый обмен
                 </h3>
                 <div class="space-y-4">
                     <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[9px] text-slate-500 uppercase font-bold block mb-1">Сумма в USD</label>
+                        <label class="text-[9px] text-slate-500 uppercase font-bold block mb-1">Трачу USD</label>
                         <input type="number" id="usdIn" value="100" class="bg-transparent text-3xl font-bold outline-none w-full">
                     </div>
-                    <div class="input-box p-5 rounded-2xl bg-white/5 mb-6">
-                        <label class="text-[9px] text-yellow-500 uppercase font-bold block mb-1" id="calc-label">Ожидаем TON</label>
-                        <input type="number" id="coinOut" class="bg-transparent text-3xl font-bold outline-none w-full text-yellow-400" readonly>
+                    <div class="input-box p-5 rounded-2xl bg-blue-500/5 mb-6">
+                        <label class="text-[9px] text-blue-500 uppercase font-bold block mb-1" id="calc-label">Получу TON</label>
+                        <input type="number" id="coinOut" class="bg-transparent text-3xl font-bold outline-none w-full text-blue-400" readonly>
                     </div>
                     
-                    <button id="buy-btn" onclick="openExchange()" class="festive-btn w-full py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">
-                        Забрать подарок (Buy) 🎁
+                    <button id="buy-btn" onclick="openExchange()" class="buy-btn w-full py-5 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-xl">
+                        Купить TON сейчас 🎄
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-[3rem] overflow-hidden p-1 h-[500px] md:h-[650px]">
-            <div id="tradingview_widget" class="h-full w-full"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="lg:col-span-1 glass p-6 rounded-[2.5rem] border-yellow-500/10">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-yellow-500 mb-4">💰 Мой Портфель</h3>
+                <div class="space-y-4">
+                    <div class="input-box p-4 rounded-xl">
+                        <p class="text-[9px] text-slate-500 uppercase mb-1" id="portfolio-label">У меня есть TON</p>
+                        <input type="number" id="portfolioQty" value="10" class="bg-transparent text-xl font-bold outline-none w-full text-white">
+                    </div>
+                    <div class="p-4 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
+                        <p class="text-[9px] text-yellow-500 uppercase mb-1">Стоимость в USD</p>
+                        <p id="portfolioValue" class="text-2xl font-black text-white">$0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 glass rounded-[2.5rem] overflow-hidden p-1 h-[500px]">
+                <div id="tradingview_widget" class="h-full w-full"></div>
+            </div>
         </div>
+
     </main>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // --- СНЕГОПАД 2026 ---
-        const snowContainer = document.getElementById('snow-bg');
-        const snowChars = ['❄', '❅', '❆', '•'];
-        
-        function createSnowflake() {
-            const snow = document.createElement('div');
-            snow.className = 'snowflake';
-            snow.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
-            
-            snow.style.left = Math.random() * 100 + 'vw';
-            const size = Math.random() * 15 + 10;
-            snow.style.fontSize = size + 'px';
-            
-            const duration = Math.random() * 7 + 5;
-            snow.style.animationDuration = duration + 's';
-            snow.style.filter = `blur(${Math.random() * 2}px)`;
-            
-            snowContainer.appendChild(snow);
-            setTimeout(() => snow.remove(), duration * 1000);
+        // --- ТАЙМЕР НОВОГО ГОДА ---
+        function updateCountdown() {
+            const nextYear = new Date('January 1, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const diff = nextYear - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerHTML = 
+                `${d}д ${h}ч ${m}м ${s}с`;
         }
-        setInterval(createSnowflake, 150);
+        setInterval(updateCountdown, 1000);
+
+        // --- СНЕГОПАД ---
+        setInterval(() => {
+            const s = document.createElement('div');
+            s.className = 'snowflake';
+            s.innerHTML = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            const dur = Math.random() * 5 + 5;
+            s.style.animationDuration = dur + 's';
+            document.getElementById('snow-bg').appendChild(s);
+            setTimeout(() => s.remove(), dur * 1000);
+        }, 200);
 
         // --- ЛОГИКА ТЕРМИНАЛА ---
         let currentCoin = 'TON';
         let currentPrice = 0;
 
         const coinData = {
-            'TON': { symbol: 'TONUSDT', tv: 'OKX:TONUSDT', logo: '🎅' },
-            'BTC': { symbol: 'BTCUSDT', tv: 'BINANCE:BTCUSDT', logo: '₿' },
-            'ETH': { symbol: 'ETHUSDT', tv: 'BINANCE:ETHUSDT', logo: 'Ξ' },
-            'SOL': { symbol: 'SOLUSDT', tv: 'BINANCE:SOLUSDT', logo: 'S' }
+            'TON': { symbol: 'TONUSDT', tv: 'OKX:TONUSDT' },
+            'BTC': { symbol: 'BTCUSDT', tv: 'BINANCE:BTCUSDT' },
+            'ETH': { symbol: 'ETHUSDT', tv: 'BINANCE:ETHUSDT' },
+            'SOL': { symbol: 'SOLUSDT', tv: 'BINANCE:SOLUSDT' }
         };
 
         function openExchange() {
@@ -138,10 +164,12 @@
                 const data = await res.json();
                 currentPrice = parseFloat(data.lastPrice);
                 document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
+                
                 const change = parseFloat(data.priceChangePercent);
                 const chEl = document.getElementById('price-change');
                 chEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
                 chEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
+                
                 calculate();
             } catch (e) { console.error("API error"); }
         }
@@ -149,9 +177,9 @@
         function selectCoin(coin) {
             currentCoin = coin;
             document.querySelectorAll('.coin-tab').forEach(t => t.classList.toggle('active', t.innerText === coin));
-            document.getElementById('bg-symbol').innerText = coin === 'TON' ? '2026' : coin;
-            document.getElementById('calc-label').innerText = `Ожидаем ${coin}`;
-            document.getElementById('buy-btn').innerText = `Забрать ${coin} 🎁`;
+            document.getElementById('calc-label').innerText = `Получу ${coin}`;
+            document.getElementById('portfolio-label').innerText = `У меня есть ${coin}`;
+            document.getElementById('buy-btn').innerText = `Купить ${coin} сейчас 🎄`;
             
             new TradingView.widget({
                 "autosize": true, "symbol": coinData[coin].tv, "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
@@ -162,11 +190,19 @@
         }
 
         function calculate() {
+            // Калькулятор обмена
             const val = document.getElementById('usdIn').value;
             if (currentPrice > 0) document.getElementById('coinOut').value = (val / currentPrice).toFixed(4);
+            
+            // Расчет портфеля
+            const qty = document.getElementById('portfolioQty').value;
+            if (currentPrice > 0 && qty > 0) {
+                document.getElementById('portfolioValue').innerText = `$${(qty * currentPrice).toLocaleString()}`;
+            }
         }
 
         document.getElementById('usdIn').addEventListener('input', calculate);
+        document.getElementById('portfolioQty').addEventListener('input', calculate);
         selectCoin('TON');
         setInterval(updatePrice, 15000);
     </script>
