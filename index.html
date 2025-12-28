@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Pro Hub</title>
+    <title>TON Terminal — Luxury Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -14,9 +14,7 @@
         .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
         .nav-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
         
-        /* Исправление выпадающего списка */
         select option { background: #17212b; color: white; }
-        
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .falling-item { position: absolute; top: -50px; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
@@ -24,6 +22,21 @@
         .garland { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; display: flex; justify-content: space-around; pointer-events: none; }
         .bulb { width: 12px; height: 12px; border-radius: 50%; animation: blink 1s infinite alternate; margin-top: 5px; }
         @keyframes blink { from { opacity: 0.2; } to { opacity: 1; box-shadow: 0 0 15px currentColor; } }
+
+        /* Улучшенная тряска */
+        @keyframes intense-shake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) rotate(-5deg); }
+            20%, 40%, 60%, 80% { transform: translateX(10px) rotate(5deg); }
+        }
+        .shake-active { animation: intense-shake 0.15s infinite; }
+
+        /* Появление приза */
+        @keyframes reveal {
+            from { transform: scale(0); opacity: 0; filter: blur(20px); }
+            to { transform: scale(1); opacity: 1; filter: blur(0); }
+        }
+        .prize-reveal { animation: reveal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -39,7 +52,7 @@
 
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-2 cursor-pointer" onclick="handleLogoClick()">
-            <span class="text-lg font-extrabold italic" id="logo-text">TON<span class="text-blue-500">TERMINAL</span></span>
+            <span class="text-lg font-extrabold italic">TON<span class="text-blue-500">TERMINAL</span></span>
         </div>
         <div class="flex items-center gap-3">
             <div class="text-right glass px-4 py-1.5 rounded-xl border border-white/10">
@@ -61,7 +74,6 @@
             <div class="glass p-6 rounded-[2.5rem]">
                 <div id="tradingview_widget" class="h-[400px] w-full rounded-2xl overflow-hidden"></div>
             </div>
-
             <div class="glass p-8 rounded-[2.5rem]">
                 <h3 class="text-xl font-black uppercase mb-6 text-center italic">Мгновенный <span class="text-blue-500">Конвертер USD</span></h3>
                 <div class="max-w-md mx-auto mb-8">
@@ -78,41 +90,43 @@
             <div class="max-w-2xl mx-auto glass p-8 rounded-[3rem]">
                 <h3 class="text-2xl font-black uppercase mb-8 text-center italic">Купить <span class="text-blue-500">Крипту</span></h3>
                 <div class="space-y-4">
-                    <div class="space-y-1">
-                        <label class="text-[9px] text-slate-500 uppercase font-black ml-2">Выберите монету</label>
-                        <select id="shop-coin-select" class="w-full bg-[#17212b] border border-white/10 p-4 rounded-xl text-sm font-bold outline-none text-white appearance-none cursor-pointer" onchange="updateShopRate()">
-                            <option value="TON">TON (Toncoin)</option>
-                            <option value="BTC">BTC (Bitcoin)</option>
-                            <option value="ETH">ETH (Ethereum)</option>
-                            <option value="SOL">SOL (Solana)</option>
-                            <option value="DOGE">DOGE (Dogecoin)</option>
-                            <option value="XRP">XRP (Ripple)</option>
-                            <option value="TRX">TRX (TRON)</option>
-                        </select>
-                    </div>
+                    <select id="shop-coin-select" class="w-full bg-[#17212b] border border-white/10 p-4 rounded-xl text-sm font-bold text-white outline-none" onchange="updateShopRate()">
+                        <option value="TON">TON (Toncoin)</option>
+                        <option value="BTC">BTC (Bitcoin)</option>
+                        <option value="ETH">ETH (Ethereum)</option>
+                        <option value="SOL">SOL (Solana)</option>
+                    </select>
                     <div class="input-box p-5 rounded-2xl">
                         <label class="text-[9px] text-slate-500 uppercase font-black block">Количество</label>
                         <input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()">
                     </div>
-                    <div class="input-box p-5 rounded-2xl">
-                        <label class="text-[9px] text-blue-500 uppercase font-black block">Ваш адрес кошелька</label>
-                        <input type="text" id="shop-wallet" placeholder="UQ..." class="bg-transparent text-xs font-mono outline-none w-full text-blue-300">
-                    </div>
-                    <div class="text-center p-4 bg-white/5 rounded-xl border border-white/5">
-                        <div id="shop-total" class="text-3xl font-black text-green-400">0.00 грн</div>
-                        <p class="text-[8px] text-slate-500 uppercase mt-1 italic">Комиссия 7.5%</p>
-                    </div>
+                    <div id="shop-total" class="text-center p-4 bg-white/5 rounded-xl text-3xl font-black text-green-400">0.00 грн</div>
                     <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-xs uppercase shadow-2xl">Отправить заявку 🚀</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-lotto" class="hidden text-center">
-            <div class="glass p-12 rounded-[4rem] max-w-2xl mx-auto">
-                <h2 class="text-5xl font-black mb-4 uppercase italic">Lotto <span class="text-blue-500">2026</span></h2>
-                <div id="box-anim" class="text-9xl my-10 cursor-pointer">🎁</div>
-                <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Играть за 350 грн</button>
-                <p class="mt-4 text-[10px] text-yellow-500 font-black uppercase tracking-widest">Шанс: 0.1%</p>
+        <div id="view-lotto" class="hidden">
+            <div class="glass p-12 rounded-[4rem] text-center max-w-2xl mx-auto relative overflow-hidden">
+                <h2 class="text-4xl font-black mb-4 uppercase italic">MEGA <span class="text-blue-500">BOX</span></h2>
+                
+                <div id="lotto-display" class="min-h-[300px] flex flex-col items-center justify-center">
+                    <div id="box-anim" class="text-[10rem] cursor-pointer transition-transform hover:scale-105">🎁</div>
+                    <div id="prize-result" class="hidden flex-col items-center">
+                        <div id="prize-icon" class="text-8xl mb-4">💎</div>
+                        <div id="prize-value" class="text-6xl font-black text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">0 грн</div>
+                        <button onclick="resetLotto()" class="mt-8 text-[10px] font-black uppercase text-slate-500 hover:text-white transition-colors">Играть еще раз</button>
+                    </div>
+                </div>
+
+                <div id="lotto-controls" class="mt-10">
+                    <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-12 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Открыть за 350 грн</button>
+                    <div class="mt-8 flex justify-center gap-6 opacity-40">
+                        <div class="text-[8px] font-bold">2 500 ГРН <br> (0.1% ШАНС)</div>
+                        <div class="text-[8px] font-bold">1 000 ГРН</div>
+                        <div class="text-[8px] font-bold">400 ГРН</div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -120,9 +134,7 @@
     <div id="admin-panel" class="fixed inset-0 bg-black/98 z-[500] hidden flex-col items-center justify-center p-6">
         <div class="glass p-8 rounded-[3rem] w-full max-w-lg">
             <h3 class="text-2xl font-black uppercase mb-6 text-center text-red-500">Управление Заявками</h3>
-            <div id="pending-list" class="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2">
-                <p class="text-center text-slate-500 text-sm italic">Заявок пока нет...</p>
-            </div>
+            <div id="pending-list" class="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2"></div>
             <button onclick="closeModal('admin-panel')" class="w-full text-slate-500 font-bold uppercase text-xs">Закрыть</button>
         </div>
     </div>
@@ -135,8 +147,8 @@
                 <button onclick="showDetails('Card')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Карта</button>
                 <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 p-4 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Кошелек</button>
             </div>
-            <div id="pay-details" class="hidden bg-blue-500/10 p-4 rounded-2xl mb-6 text-left border border-blue-500/20">
-                <p id="details-val" class="text-[10px] font-mono break-all bg-black/40 p-2 rounded select-all text-white"></p>
+            <div id="pay-details" class="hidden bg-blue-500/10 p-4 rounded-2xl mb-6 text-left border border-blue-500/20 text-white">
+                <p id="details-val" class="text-[10px] font-mono break-all bg-black/40 p-2 rounded select-all"></p>
             </div>
             <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-[10px] uppercase text-white">Я оплатил</button>
             <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Назад</button>
@@ -155,12 +167,11 @@
         let clickCount = 0;
         let pendingDeposits = JSON.parse(localStorage.getItem('pending_deposits')) || [];
 
-        // Секретный вход в админку (3 клика по лого)
+        // АДМИН ПАНЕЛЬ
         function handleLogoClick() {
             clickCount++;
             if (clickCount >= 3) {
-                const pass = prompt("Пароль админа:");
-                if (pass === "1234") {
+                if (prompt("Пароль админа:") === "1234") {
                     renderAdminPanel();
                     openModal('admin-panel');
                 }
@@ -171,41 +182,31 @@
 
         function renderAdminPanel() {
             const list = document.getElementById('pending-list');
-            if (pendingDeposits.length === 0) {
-                list.innerHTML = '<p class="text-center text-slate-500 text-sm italic">Заявок пока нет...</p>';
-                return;
-            }
-            list.innerHTML = pendingDeposits.map((dep, index) => `
+            list.innerHTML = pendingDeposits.length ? pendingDeposits.map((dep, i) => `
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/10 flex justify-between items-center">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">${dep.method}</p>
-                        <p class="text-lg font-black text-green-400">${dep.amount} грн</p>
-                    </div>
-                    <button onclick="approveDeposit(${index})" class="bg-green-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase">Подтвердить</button>
+                    <div><p class="text-lg font-black text-green-400">${dep.amount} грн</p></div>
+                    <button onclick="approveDeposit(${i})" class="bg-green-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase">OK</button>
                 </div>
-            `).join('');
+            `).join('') : '<p class="text-center text-slate-500 text-sm italic">Заявок нет</p>';
         }
 
         function approveDeposit(index) {
-            const dep = pendingDeposits[index];
-            balance += parseFloat(dep.amount);
+            balance += parseFloat(pendingDeposits[index].amount);
             pendingDeposits.splice(index, 1);
             localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
-            updateUI();
-            renderAdminPanel();
-            alert("Баланс пополнен!");
+            updateUI(); renderAdminPanel();
         }
 
+        // КУРСЫ
         async function fetchAllRates() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price');
                 const data = await res.json();
-                const symbols = ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'XRPUSDT', 'TRXUSDT'];
-                data.forEach(item => {
-                    if(symbols.includes(item.symbol)) rates[item.symbol.replace('USDT', '')] = parseFloat(item.price);
+                ['TONUSDT', 'BTCUSDT', 'ETHUSDT', 'SOLUSDT'].forEach(s => {
+                    const found = data.find(d => d.symbol === s);
+                    if(found) rates[s.replace('USDT', '')] = parseFloat(found.price);
                 });
-                runGlobalConvert();
-                updateShopRate();
+                runGlobalConvert(); updateShopRate();
             } catch(e) {}
         }
 
@@ -213,18 +214,17 @@
             const usd = parseFloat(document.getElementById('conv-usd').value) || 0;
             const container = document.getElementById('conv-results');
             if(!container) return;
-            container.innerHTML = "";
-            Object.keys(rates).forEach(coin => {
-                const amount = usd / rates[coin];
-                container.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center"><p class="text-[8px] uppercase text-slate-500 font-bold mb-1">${coin}</p><p class="text-sm font-black text-blue-400">${amount.toLocaleString(undefined, {maximumFractionDigits: 5})}</p></div>`;
-            });
+            container.innerHTML = Object.keys(rates).map(coin => `
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <p class="text-[8px] uppercase text-slate-500 font-bold mb-1">${coin}</p>
+                    <p class="text-sm font-black text-blue-400">${(usd/rates[coin]).toFixed(5)}</p>
+                </div>`).join('');
         }
 
         function updateShopRate() {
             const coin = document.getElementById('shop-coin-select').value;
             const qty = parseFloat(document.getElementById('shop-qty').value) || 0;
-            if(!rates[coin]) return;
-            document.getElementById('shop-total').innerText = (qty * rates[coin] * 42.5 * 1.075).toFixed(2) + " грн";
+            if(rates[coin]) document.getElementById('shop-total').innerText = (qty * rates[coin] * 42.5 * 1.075).toFixed(2) + " грн";
         }
 
         function updateUI() {
@@ -232,53 +232,65 @@
             localStorage.setItem('user_balance', balance);
         }
 
-        async function sendToAdmin(msg) {
-            const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`;
-            await fetch(url);
+        // ЛОТЕРЕЯ (ОБНОВЛЕННАЯ)
+        function playLotto() {
+            if (balance < 350) return alert("Нужно 350 грн!");
+            balance -= 350; updateUI();
+
+            const box = document.getElementById('box-anim');
+            const btn = document.getElementById('lotto-btn');
+            
+            btn.style.display = 'none';
+            box.classList.add('shake-active');
+
+            setTimeout(() => {
+                box.classList.remove('shake-active');
+                box.style.display = 'none';
+                
+                // ШАНСЫ ПО ЗАПРОСУ
+                const r = Math.random() * 100;
+                let win = 0;
+                if (r <= 0.000001) win = 2500; // Твой новый джекпот
+                else if (r <= 0.05) win = 1000;
+                else if (r <= 5.0) win = 400;
+                else if (r <= 25.0) win = 275;
+                else win = 50;
+
+                balance += win; updateUI();
+                
+                const resultDiv = document.getElementById('prize-result');
+                const valDiv = document.getElementById('prize-value');
+                const iconDiv = document.getElementById('prize-icon');
+                
+                valDiv.innerText = win + " грн";
+                iconDiv.innerText = win >= 1000 ? "👑" : "💎";
+                
+                resultDiv.classList.remove('hidden');
+                resultDiv.classList.add('prize-reveal');
+
+                const msg = `🎉 ЛОТО!\nВыигрыш: ${win} грн\nБаланс: ${balance.toFixed(2)} грн`;
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`);
+            }, 2500);
+        }
+
+        function resetLotto() {
+            document.getElementById('prize-result').classList.add('hidden');
+            document.getElementById('box-anim').style.display = 'block';
+            document.getElementById('lotto-btn').style.display = 'inline-block';
+        }
+
+        // ВСПОМОГАТЕЛЬНОЕ
+        function confirmDeposit() {
+            const amt = document.getElementById('dep-input').value;
+            pendingDeposits.push({ amount: amt });
+            localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: " + amt + " грн")}`);
+            closeModal('deposit-modal'); alert("Запрос отправлен!");
         }
 
         function showDetails(method) {
             document.getElementById('pay-details').classList.remove('hidden');
             document.getElementById('details-val').innerText = method === 'Card' ? MY_CARD : MY_TON_WALLET;
-        }
-
-        function confirmDeposit() {
-            const amt = document.getElementById('dep-input').value;
-            const method = document.getElementById('pay-details').classList.contains('hidden') ? "Unknown" : "Manual";
-            
-            pendingDeposits.push({ amount: amt, method: "Deposit Request" });
-            localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
-            
-            sendToAdmin(`💰 НОВЫЙ ДЕПОЗИТ!\nСумма: ${amt} грн\nЗайди на сайт и подтверди через логотип!`);
-            closeModal('deposit-modal');
-            alert("Запрос отправлен! Админ подтвердит оплату.");
-        }
-
-        function processFinalPurchase() {
-            const coin = document.getElementById('shop-coin-select').value;
-            const qty = document.getElementById('shop-qty').value;
-            const wallet = document.getElementById('shop-wallet').value;
-            const uahPrice = rates[coin] * 42.5 * 1.075 * qty;
-            if (balance < uahPrice) return alert("Недостаточно грн!");
-            if (wallet.length < 5) return alert("Введите адрес!");
-            balance -= uahPrice; updateUI();
-            sendToAdmin(`🛒 КУПИЛИ КРИПТУ!\nМонета: ${coin}\nКол-во: ${qty}\nАдрес: ${wallet}\nСписано: ${uahPrice.toFixed(2)} грн`);
-            alert("Заявка принята!");
-        }
-
-        function playLotto() {
-            if (balance < 350) return alert("Нужно 350 грн!");
-            balance -= 350; updateUI();
-            const box = document.getElementById('box-anim');
-            box.classList.add('shake');
-            setTimeout(() => {
-                box.classList.remove('shake');
-                const r = Math.random() * 100;
-                let win = (r <= 0.000001) ? 25000 : (r <= 5.0 ? 2500 : 275);
-                balance += win; updateUI();
-                alert(`Выигрыш: ${win} грн!`);
-                sendToAdmin(`🎉 ВЫИГРЫШ!\nСумма: ${win} грн\nБаланс юзера: ${balance.toFixed(2)} грн`);
-            }, 2000);
         }
 
         function showTab(tab) {
@@ -291,9 +303,7 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
-        setInterval(fetchAllRates, 20000);
-        fetchAllRates(); updateUI();
-        
+        setInterval(fetchAllRates, 20000); fetchAllRates(); updateUI();
         setInterval(() => {
             const el = document.createElement('div'); el.className = 'falling-item'; el.innerHTML = '❄';
             el.style.left = Math.random() * 100 + 'vw';
