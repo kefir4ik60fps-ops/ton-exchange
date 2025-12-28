@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Hub 2026 — Market & Terminal v7.5</title>
+    <title>Crypto Terminal 2026 — Market Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background-color: #030712; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        .input-box { background: rgba(31, 41, 55, 0.6); border: 1px solid rgba(255,255,255,0.1); }
-        .coin-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
-        .buy-btn { background: linear-gradient(135deg, #059669 0%, #10b981 100%); transition: all 0.3s; }
-        .market-card { transition: all 0.3s; border: 1px solid rgba(255,255,255,0.03); }
-        .market-card:hover { transform: translateY(-8px); border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
-
-        /* ГИРЛЯНДА */
+        html { scroll-behavior: smooth; }
+        body { background-color: #050810; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.05); }
+        .festive-card { border: 1px solid rgba(239, 68, 68, 0.1); transition: all 0.3s; }
+        .festive-card:hover { transform: translateY(-10px); border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+        .nav-link { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; transition: 0.3s; }
+        .nav-link:hover { color: #f59e0b; }
+        
+        /* Гирлянда */
         .garland { display: flex; justify-content: space-around; position: fixed; top: 0; left: 0; width: 100%; z-index: 100; pointer-events: none; }
-        .light { width: 8px; height: 8px; border-radius: 50%; animation: glow 2s infinite alternate; }
+        .light { width: 6px; height: 6px; border-radius: 50%; animation: glow 2s infinite alternate; }
         .light:nth-child(odd) { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-        .light:nth-child(even) { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation-delay: 1s; }
-        @keyframes glow { from { opacity: 0.3; } to { opacity: 1; } }
+        .light:nth-child(even) { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; animation-delay: 1s; }
+        @keyframes glow { from { opacity: 0.2; } to { opacity: 1; } }
 
-        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .falling-item { position: absolute; top: -50px; animation: fall linear infinite; opacity: 0.3; }
-        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+        #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .snowflake { position: absolute; top: -20px; color: white; animation: fall linear infinite; opacity: 0.4; }
+        @keyframes fall { 0% { transform: translateY(0); } 100% { transform: translateY(110vh) rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -33,81 +33,95 @@
         <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
         <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
     </div>
-    <div id="bg-layer"></div>
+    <div id="snow-bg"></div>
 
-    <nav class="border-b border-white/5 py-3 px-4 flex flex-col sm:flex-row justify-between items-center glass sticky top-0 z-50 gap-2">
-        <div class="flex items-center gap-2">
-            <div class="p-1 bg-blue-600 rounded-lg"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-4 h-4"></div>
-            <span class="text-md font-extrabold italic tracking-tight">CRYPTO<span class="text-blue-500 font-black">PRO</span></span>
+    <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center glass sticky top-0 z-50 gap-4">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="p-1 bg-red-600 rounded-lg shadow-lg shadow-red-600/20 text-xs">🎅</div>
+                <span class="text-md font-extrabold italic">TON<span class="text-red-500 font-black">2026</span></span>
+            </div>
+            <a href="#market" class="nav-link">Каталог</a>
+            <a href="#" class="nav-link hidden sm:block">Терминал</a>
         </div>
+
         <div class="flex flex-col items-center">
-            <span class="text-[7px] uppercase font-black text-slate-500 tracking-widest">Happy New 2026 Year:</span>
-            <div id="countdown" class="text-xs font-mono font-bold text-yellow-500">00:00:00:00</div>
+            <span class="text-[7px] uppercase font-black text-slate-500 tracking-widest">До Нового Года:</span>
+            <div id="countdown" class="text-xs md:text-sm font-mono font-bold text-yellow-500">00:00:00:00</div>
         </div>
-        <div class="text-[8px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase">v7.5 Stable</div>
+
+        <div class="hidden md:block text-[9px] font-mono text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 uppercase tracking-tighter">
+            Market Live
+        </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-4 relative z-10">
+    <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <div class="lg:col-span-2 glass p-6 rounded-[2rem] flex flex-col justify-center min-h-[140px] relative overflow-hidden">
-                <p class="text-[9px] text-slate-500 font-black uppercase mb-1" id="coin-label">TON / USD</p>
-                <div class="flex items-baseline gap-3">
-                    <span id="price-usd" class="text-3xl md:text-5xl font-black text-white tracking-tighter">$...</span>
-                    <span id="price-change" class="text-sm md:text-lg font-bold">+0.00%</span>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+            <div class="lg:col-span-2 glass p-8 rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden">
+                <p class="text-[10px] text-slate-500 font-black uppercase mb-1 tracking-widest">TON / USD</p>
+                <div class="flex items-baseline gap-4">
+                    <span id="price-usd" class="text-4xl md:text-6xl font-black text-white">$...</span>
+                    <span id="price-change" class="text-lg font-bold text-green-400">+0.00%</span>
                 </div>
             </div>
 
-            <div class="glass p-5 rounded-[2rem]">
-                <h3 class="text-[9px] font-black uppercase text-slate-500 mb-3 tracking-widest">Быстрый расчет</h3>
-                <div class="space-y-3">
-                    <input type="number" id="usdIn" value="100" class="input-box p-3 rounded-xl bg-transparent w-full text-lg font-bold outline-none">
-                    <input type="number" id="coinOut" class="input-box p-3 rounded-xl bg-blue-500/5 w-full text-lg font-bold text-blue-400 outline-none" readonly>
-                    <button onclick="window.open('https://t.me/wallet')" class="buy-btn w-full py-3 rounded-xl font-black text-[9px] uppercase tracking-widest text-white mt-1 shadow-lg">Купить TON</button>
+            <div class="glass p-6 rounded-[2.5rem]">
+                <h3 class="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Обмен</h3>
+                <input type="number" id="usdIn" value="100" class="input-box p-3 rounded-xl bg-transparent w-full text-lg font-bold outline-none mb-3">
+                <input type="number" id="coinOut" class="input-box p-3 rounded-xl bg-blue-500/5 w-full text-lg font-bold text-blue-400 outline-none mb-4" readonly>
+                <button onclick="window.open('https://t.me/wallet')" class="bg-red-600 w-full py-3 rounded-xl font-black text-[10px] uppercase text-white shadow-lg">Купить TON 🎁</button>
+            </div>
+
+            <div class="glass p-6 rounded-[2.5rem] border-yellow-500/10">
+                <h3 class="text-[10px] font-black uppercase text-yellow-500 mb-4 tracking-widest">Портфель</h3>
+                <input type="number" id="portfolioQty" value="10" class="input-box p-3 rounded-xl bg-transparent w-full text-lg font-bold outline-none mb-3">
+                <div class="p-3 bg-yellow-500/5 rounded-xl border border-yellow-500/20 text-center">
+                    <p id="portfolioValue" class="text-2xl font-black text-white tracking-tighter">$0.00</p>
                 </div>
             </div>
         </div>
 
-        <section class="mb-10">
-            <h2 class="text-sm font-black uppercase tracking-[0.3em] text-blue-500 mb-6 flex items-center gap-2">
-                <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span> Маркетплейс услуг
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
-                    <div class="text-3xl mb-4">🔍</div>
-                    <h4 class="font-black text-sm mb-2 uppercase">OSINT Проверка</h4>
-                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Полный поиск информации по открытым источникам: никнеймы, почты, социальные сети.</p>
-                    <div class="mt-auto flex justify-between items-center">
-                        <span class="text-lg font-black text-blue-400">5 TON</span>
-                        <button onclick="order('OSINT Проверка')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+        <section id="market" class="mb-12 scroll-mt-24">
+            <div class="flex items-center gap-3 mb-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.3em] text-red-500">Новогодняя Ярмарка</h2>
+                <div class="h-[1px] bg-white/5 flex-grow"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="festive-card glass p-8 rounded-[3rem] flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h4 class="font-black text-xs mb-3 uppercase tracking-widest">Создание Ботов</h4>
+                    <p class="text-[10px] text-slate-400 mb-6">Разработка Telegram ботов на Python любой сложности. Быстро и с гарантией.</p>
+                    <div class="mt-auto w-full">
+                        <div class="text-xl font-black text-yellow-500 mb-4">от 10 TON</div>
+                        <button onclick="order('Telegram Бот')" class="bg-white/5 hover:bg-white/10 w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition">Выбрать</button>
                     </div>
                 </div>
 
-                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
-                    <div class="text-3xl mb-4">🤖</div>
-                    <h4 class="font-black text-sm mb-2 uppercase">Telegram Бот</h4>
-                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Разработка простого бота на Python для вашего бизнеса или канала с кнопками и меню.</p>
-                    <div class="mt-auto flex justify-between items-center">
-                        <span class="text-lg font-black text-blue-400">15 TON</span>
-                        <button onclick="order('Telegram Бот')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+                <div class="festive-card glass p-8 rounded-[3rem] flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4">📸</div>
+                    <h4 class="font-black text-xs mb-3 uppercase tracking-widest">Dota/CS2 Edit</h4>
+                    <p class="text-[10px] text-slate-400 mb-6">Красивое оформление скриншотов и создание аватарок для твоего игрового профиля.</p>
+                    <div class="mt-auto w-full">
+                        <div class="text-xl font-black text-yellow-500 mb-4">3 TON</div>
+                        <button onclick="order('Дизайн скриншотов')" class="bg-white/5 hover:bg-white/10 w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition">Выбрать</button>
                     </div>
                 </div>
 
-                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
-                    <div class="text-3xl mb-4">💎</div>
-                    <h4 class="font-black text-sm mb-2 uppercase">NFT Консультация</h4>
-                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Помогу разобраться в NFT подарках Telegram, их стоимости и способах выгодной продажи.</p>
-                    <div class="mt-auto flex justify-between items-center">
-                        <span class="text-lg font-black text-blue-400">2 TON</span>
-                        <button onclick="order('NFT Консультация')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+                <div class="festive-card glass p-8 rounded-[3rem] flex flex-col items-center text-center">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h4 class="font-black text-xs mb-3 uppercase tracking-widest">NFT Подарки</h4>
+                    <p class="text-[10px] text-slate-400 mb-6">Консультация по покупке и продаже редких NFT подарков в Telegram.</p>
+                    <div class="mt-auto w-full">
+                        <div class="text-xl font-black text-yellow-500 mb-4">2 TON</div>
+                        <button onclick="order('Консультация NFT')" class="bg-white/5 hover:bg-white/10 w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition">Выбрать</button>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <div class="glass rounded-[2rem] overflow-hidden p-1 h-[400px] md:h-[550px] mb-10 shadow-xl">
+        <div class="glass rounded-[3rem] overflow-hidden p-1 h-[400px] md:h-[600px] mb-12 shadow-2xl">
             <div id="tradingview_widget" class="h-full w-full"></div>
         </div>
 
@@ -115,14 +129,12 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // Функция заказа
         function order(service) {
-            const myTelegram = "ТВОЙ_НИК"; // ЗАМЕНИ НА СВОЙ НИК (без @)
-            const text = encodeURIComponent(`Привет! Я хочу заказать услугу: ${service}`);
+            const myTelegram = "ТВОЙ_НИК"; // ВПИШИ СВОЙ НИК БЕЗ @
+            const text = encodeURIComponent(`Привет! Я с твоего сайта. Хочу заказать: ${service}`);
             window.open(`https://t.me/${myTelegram}?text=${text}`, '_blank');
         }
 
-        // Таймер
         function updateCountdown() {
             const diff = new Date('January 1, 2026 00:00:00').getTime() - new Date().getTime();
             const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
@@ -130,26 +142,21 @@
         }
         setInterval(updateCountdown, 1000);
 
-        // Снег и Монеты
-        const items = ['❄', '₿', 'TON', '🎄', '❆'];
         setInterval(() => {
-            const el = document.createElement('div');
-            el.className = 'falling-item font-bold text-white/10';
-            el.innerHTML = items[Math.floor(Math.random() * items.length)];
-            el.style.left = Math.random() * 100 + 'vw';
-            const size = Math.random() * 12 + 8;
-            el.style.fontSize = size + 'px';
-            const dur = Math.random() * 10 + 10;
-            el.style.animationDuration = dur + 's';
-            document.getElementById('bg-layer').appendChild(el);
-            setTimeout(() => el.remove(), dur * 1000);
-        }, 600);
+            const s = document.createElement('div');
+            s.className = 'snowflake'; s.innerHTML = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            const dur = Math.random() * 5 + 7;
+            s.style.animationDuration = dur + 's';
+            document.getElementById('snow-bg').appendChild(s);
+            setTimeout(() => s.remove(), dur * 1000);
+        }, 400);
 
-        // Цены
-        let currentCoin = 'TON', currentPrice = 0;
+        let currentPrice = 0;
         async function updatePrice() {
             try {
-                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT`);
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT');
                 const data = await res.json();
                 currentPrice = parseFloat(data.lastPrice);
                 document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
@@ -158,23 +165,24 @@
                 chEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
                 chEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
                 calculate();
-            } catch (e) { console.error("API Error"); }
+            } catch (e) { console.error("API error"); }
         }
 
         function calculate() {
             const usd = document.getElementById('usdIn').value;
             if (currentPrice > 0) document.getElementById('coinOut').value = (usd / currentPrice).toFixed(4);
+            const qty = document.getElementById('portfolioQty').value;
+            if (currentPrice > 0) document.getElementById('portfolioValue').innerText = `$${(qty * currentPrice).toLocaleString()}`;
         }
 
         new TradingView.widget({
-            "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
-            "container_id": "tradingview_widget", "backgroundColor": "#030712", "gridColor": "rgba(255, 255, 255, 0.05)",
-            "hide_side_toolbar": true
+            "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "container_id": "tradingview_widget",
+            "backgroundColor": "#050810", "gridColor": "rgba(255, 255, 255, 0.05)", "hide_side_toolbar": true
         });
 
         document.getElementById('usdIn').addEventListener('input', calculate);
-        updatePrice();
-        setInterval(updatePrice, 20000);
+        document.getElementById('portfolioQty').addEventListener('input', calculate);
+        updatePrice(); setInterval(updatePrice, 20000);
     </script>
 </body>
 </html>
