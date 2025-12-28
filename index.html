@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Hub 2026 — Festive Mobile</title>
+    <title>Crypto Hub 2026 — Market & Terminal v7.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -12,126 +12,116 @@
         .input-box { background: rgba(31, 41, 55, 0.6); border: 1px solid rgba(255,255,255,0.1); }
         .coin-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
         .buy-btn { background: linear-gradient(135deg, #059669 0%, #10b981 100%); transition: all 0.3s; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .market-card { transition: all 0.3s; border: 1px solid rgba(255,255,255,0.03); }
+        .market-card:hover { transform: translateY(-8px); border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
 
         /* ГИРЛЯНДА */
-        .garland {
-            display: flex; justify-content: space-around; position: fixed;
-            top: 0; left: 0; width: 100%; z-index: 100; pointer-events: none;
-        }
-        .light {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: white; box-shadow: 0 0 10px white;
-            animation: glow 2s infinite alternate; opacity: 0.8;
-        }
-        .light:nth-child(odd) { animation-delay: 1s; background: #ef4444; box-shadow: 0 0 15px #ef4444; }
-        .light:nth-child(even) { background: #3b82f6; box-shadow: 0 0 15px #3b82f6; }
-        @keyframes glow { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); } }
+        .garland { display: flex; justify-content: space-around; position: fixed; top: 0; left: 0; width: 100%; z-index: 100; pointer-events: none; }
+        .light { width: 8px; height: 8px; border-radius: 50%; animation: glow 2s infinite alternate; }
+        .light:nth-child(odd) { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .light:nth-child(even) { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation-delay: 1s; }
+        @keyframes glow { from { opacity: 0.3; } to { opacity: 1; } }
 
-        /* АНИМАЦИЯ ФОНА */
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .falling-item { position: absolute; top: -50px; animation: fall linear infinite; opacity: 0.4; }
+        .falling-item { position: absolute; top: -50px; animation: fall linear infinite; opacity: 0.3; }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="min-h-screen pb-20">
 
     <div class="garland">
         <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
         <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
     </div>
-
     <div id="bg-layer"></div>
 
     <nav class="border-b border-white/5 py-3 px-4 flex flex-col sm:flex-row justify-between items-center glass sticky top-0 z-50 gap-2">
         <div class="flex items-center gap-2">
             <div class="p-1 bg-blue-600 rounded-lg"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-4 h-4"></div>
-            <span class="text-md font-extrabold italic">TON<span class="text-blue-500 font-black">2026</span></span>
+            <span class="text-md font-extrabold italic tracking-tight">CRYPTO<span class="text-blue-500 font-black">PRO</span></span>
         </div>
-        
         <div class="flex flex-col items-center">
-            <span class="text-[7px] uppercase font-black text-slate-500 tracking-widest">До 2026 года осталось:</span>
+            <span class="text-[7px] uppercase font-black text-slate-500 tracking-widest">Happy New 2026 Year:</span>
             <div id="countdown" class="text-xs font-mono font-bold text-yellow-500">00:00:00:00</div>
         </div>
-
-        <div class="hidden sm:block text-[8px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase">
-            v7.4 Live
-        </div>
+        <div class="text-[8px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase">v7.5 Stable</div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-4 relative z-10">
         
-        <div class="flex gap-2 overflow-x-auto mb-6 pb-2 no-scrollbar">
-            <div class="coin-tab active px-5 py-2 rounded-xl glass font-bold text-[10px]" onclick="selectCoin('TON')">TON</div>
-            <div class="coin-tab px-5 py-2 rounded-xl glass font-bold text-[10px]" onclick="selectCoin('BTC')">BTC</div>
-            <div class="coin-tab px-5 py-2 rounded-xl glass font-bold text-[10px]" onclick="selectCoin('ETH')">ETH</div>
-            <div class="coin-tab px-5 py-2 rounded-xl glass font-bold text-[10px]" onclick="selectCoin('SOL')">SOL</div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            <div class="lg:col-span-2 glass p-6 rounded-[2rem] flex flex-col justify-center relative overflow-hidden min-h-[140px]">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <div class="lg:col-span-2 glass p-6 rounded-[2rem] flex flex-col justify-center min-h-[140px] relative overflow-hidden">
                 <p class="text-[9px] text-slate-500 font-black uppercase mb-1" id="coin-label">TON / USD</p>
                 <div class="flex items-baseline gap-3">
                     <span id="price-usd" class="text-3xl md:text-5xl font-black text-white tracking-tighter">$...</span>
                     <span id="price-change" class="text-sm md:text-lg font-bold">+0.00%</span>
                 </div>
-                <div id="bg-symbol" class="absolute -right-4 -bottom-6 text-[100px] font-black text-white/[0.02] pointer-events-none italic">2026</div>
             </div>
 
             <div class="glass p-5 rounded-[2rem]">
-                <h3 class="text-[9px] font-black uppercase text-slate-500 mb-3 tracking-widest">Обмен</h3>
+                <h3 class="text-[9px] font-black uppercase text-slate-500 mb-3 tracking-widest">Быстрый расчет</h3>
                 <div class="space-y-3">
                     <input type="number" id="usdIn" value="100" class="input-box p-3 rounded-xl bg-transparent w-full text-lg font-bold outline-none">
                     <input type="number" id="coinOut" class="input-box p-3 rounded-xl bg-blue-500/5 w-full text-lg font-bold text-blue-400 outline-none" readonly>
-                    <button onclick="window.open('https://t.me/wallet')" class="buy-btn w-full py-3 rounded-xl font-black text-[9px] uppercase tracking-widest text-white mt-1 shadow-lg">Купить TON сейчас 🎄</button>
-                </div>
-            </div>
-
-            <div class="glass p-5 rounded-[2rem] border-yellow-500/10">
-                <h3 class="text-[9px] font-black uppercase text-yellow-500 mb-3 tracking-widest">Портфель</h3>
-                <div class="space-y-3">
-                    <div class="input-box p-3 rounded-xl">
-                        <p class="text-[8px] text-slate-500 uppercase mb-1 font-bold" id="portfolio-label">У меня есть TON</p>
-                        <input type="number" id="portfolioQty" value="10" class="bg-transparent text-lg font-bold outline-none w-full">
-                    </div>
-                    <div class="p-3 bg-yellow-500/5 rounded-xl border border-yellow-500/20">
-                        <p id="portfolioValue" class="text-xl font-black text-white tracking-tighter">$0.00</p>
-                    </div>
+                    <button onclick="window.open('https://t.me/wallet')" class="buy-btn w-full py-3 rounded-xl font-black text-[9px] uppercase tracking-widest text-white mt-1 shadow-lg">Купить TON</button>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-[2rem] overflow-hidden p-1 h-[350px] md:h-[500px] mb-6 shadow-xl">
+        <section class="mb-10">
+            <h2 class="text-sm font-black uppercase tracking-[0.3em] text-blue-500 mb-6 flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span> Маркетплейс услуг
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
+                    <div class="text-3xl mb-4">🔍</div>
+                    <h4 class="font-black text-sm mb-2 uppercase">OSINT Проверка</h4>
+                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Полный поиск информации по открытым источникам: никнеймы, почты, социальные сети.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="text-lg font-black text-blue-400">5 TON</span>
+                        <button onclick="order('OSINT Проверка')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+                    </div>
+                </div>
+
+                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
+                    <div class="text-3xl mb-4">🤖</div>
+                    <h4 class="font-black text-sm mb-2 uppercase">Telegram Бот</h4>
+                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Разработка простого бота на Python для вашего бизнеса или канала с кнопками и меню.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="text-lg font-black text-blue-400">15 TON</span>
+                        <button onclick="order('Telegram Бот')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+                    </div>
+                </div>
+
+                <div class="market-card glass p-6 rounded-[2.5rem] flex flex-col">
+                    <div class="text-3xl mb-4">💎</div>
+                    <h4 class="font-black text-sm mb-2 uppercase">NFT Консультация</h4>
+                    <p class="text-[10px] text-slate-400 mb-6 leading-relaxed">Помогу разобраться в NFT подарках Telegram, их стоимости и способах выгодной продажи.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="text-lg font-black text-blue-400">2 TON</span>
+                        <button onclick="order('NFT Консультация')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition">Заказать</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="glass rounded-[2rem] overflow-hidden p-1 h-[400px] md:h-[550px] mb-10 shadow-xl">
             <div id="tradingview_widget" class="h-full w-full"></div>
-        </div>
-
-        <div class="glass rounded-[2rem] p-6">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span> News Hub
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <a href="https://blog.ton.org/" target="_blank" class="glass p-4 rounded-2xl block hover:bg-white/[0.05] transition">
-                    <span class="text-[7px] font-black bg-red-500/20 text-red-400 px-2 py-0.5 rounded uppercase mb-2 inline-block">Hot</span>
-                    <h4 class="text-xs font-bold mb-1">Прогноз TON на 2026</h4>
-                    <p class="text-[10px] text-slate-400 leading-tight">Анализ роста экосистемы в новом году...</p>
-                </a>
-                <a href="https://cointelegraph.com/tags/bitcoin" target="_blank" class="glass p-4 rounded-2xl block hover:bg-white/[0.05] transition">
-                    <span class="text-[7px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase mb-2 inline-block">Trending</span>
-                    <h4 class="text-xs font-bold mb-1">Биткоин: Итоги года</h4>
-                    <p class="text-[10px] text-slate-400 leading-tight">Главная крипта удерживает позиции...</p>
-                </a>
-                <a href="https://tonkeeper.com/blog/" target="_blank" class="glass p-4 rounded-2xl block hover:bg-white/[0.05] transition">
-                    <span class="text-[7px] font-black bg-green-500/20 text-green-400 px-2 py-0.5 rounded uppercase mb-2 inline-block">Update</span>
-                    <h4 class="text-xs font-bold mb-1">Новости Tonkeeper</h4>
-                    <p class="text-[10px] text-slate-400 leading-tight">Обновление интерфейса и новые функции...</p>
-                </a>
-            </div>
         </div>
 
     </main>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // Функция заказа
+        function order(service) {
+            const myTelegram = "ТВОЙ_НИК"; // ЗАМЕНИ НА СВОЙ НИК (без @)
+            const text = encodeURIComponent(`Привет! Я хочу заказать услугу: ${service}`);
+            window.open(`https://t.me/${myTelegram}?text=${text}`, '_blank');
+        }
+
         // Таймер
         function updateCountdown() {
             const diff = new Date('January 1, 2026 00:00:00').getTime() - new Date().getTime();
@@ -140,29 +130,26 @@
         }
         setInterval(updateCountdown, 1000);
 
-        // Падающие элементы (Монеты + Снег + Елки)
+        // Снег и Монеты
         const items = ['❄', '₿', 'TON', '🎄', '❆'];
         setInterval(() => {
             const el = document.createElement('div');
-            el.className = 'falling-item font-bold text-white/20';
+            el.className = 'falling-item font-bold text-white/10';
             el.innerHTML = items[Math.floor(Math.random() * items.length)];
             el.style.left = Math.random() * 100 + 'vw';
-            const size = Math.random() * 12 + 10;
+            const size = Math.random() * 12 + 8;
             el.style.fontSize = size + 'px';
-            const dur = Math.random() * 8 + 8;
+            const dur = Math.random() * 10 + 10;
             el.style.animationDuration = dur + 's';
             document.getElementById('bg-layer').appendChild(el);
             setTimeout(() => el.remove(), dur * 1000);
-        }, 500);
+        }, 600);
 
-        // Логика цен
+        // Цены
         let currentCoin = 'TON', currentPrice = 0;
-        const coinData = { 'TON': 'TONUSDT', 'BTC': 'BTCUSDT', 'ETH': 'ETHUSDT', 'SOL': 'SOLUSDT' };
-        const tvData = { 'TON': 'OKX:TONUSDT', 'BTC': 'BINANCE:BTCUSDT', 'ETH': 'BINANCE:ETHUSDT', 'SOL': 'BINANCE:SOLUSDT' };
-
         async function updatePrice() {
             try {
-                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinData[currentCoin]}`);
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT`);
                 const data = await res.json();
                 currentPrice = parseFloat(data.lastPrice);
                 document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
@@ -174,30 +161,19 @@
             } catch (e) { console.error("API Error"); }
         }
 
-        function selectCoin(coin) {
-            currentCoin = coin;
-            document.querySelectorAll('.coin-tab').forEach(t => t.classList.toggle('active', t.innerText === coin));
-            document.getElementById('coin-label').innerText = `${coin} / USD`;
-            document.getElementById('portfolio-label').innerText = `У меня есть ${coin}`;
-            
-            new TradingView.widget({
-                "autosize": true, "symbol": tvData[coin], "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
-                "container_id": "tradingview_widget", "backgroundColor": "rgba(3, 7, 18, 1)", "gridColor": "rgba(255, 255, 255, 0.05)",
-                "hide_side_toolbar": true
-            });
-            updatePrice();
-        }
-
         function calculate() {
             const usd = document.getElementById('usdIn').value;
             if (currentPrice > 0) document.getElementById('coinOut').value = (usd / currentPrice).toFixed(4);
-            const qty = document.getElementById('portfolioQty').value;
-            if (currentPrice > 0) document.getElementById('portfolioValue').innerText = `$${(qty * currentPrice).toLocaleString()}`;
         }
 
+        new TradingView.widget({
+            "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
+            "container_id": "tradingview_widget", "backgroundColor": "#030712", "gridColor": "rgba(255, 255, 255, 0.05)",
+            "hide_side_toolbar": true
+        });
+
         document.getElementById('usdIn').addEventListener('input', calculate);
-        document.getElementById('portfolioQty').addEventListener('input', calculate);
-        selectCoin('TON');
+        updatePrice();
         setInterval(updatePrice, 20000);
     </script>
 </body>
