@@ -1,29 +1,209 @@
-<div class="glass rounded-[2.5rem] p-6 md:p-8">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
-            <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-            News Hub
-        </h3>
-        <span class="text-[10px] text-slate-500 font-bold uppercase">28 Dec 2025</span>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a href="https://blog.ton.org/" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
-            <span class="text-[8px] font-black bg-red-500/20 text-red-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Hot</span>
-            <h4 class="text-sm font-bold mb-2">Прогноз TON на 2026 год: Ожидания аналитиков</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Эксперты прогнозируют рост экосистемы Telegram Apps и приток новых пользователей в сеть TON...</p>
-        </a>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Terminal 2026 — Full Pro v7.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #05080f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.05); }
+        .input-box { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .coin-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
+        .buy-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s; }
+        .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+        .news-card { transition: all 0.3s; border: 1px solid rgba(255,255,255,0.03); }
+        .news-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.3); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Эффекты фона */
+        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .falling-item { position: absolute; top: -50px; animation: fall linear infinite; opacity: 0.5; }
+        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
 
-        <a href="https://cointelegraph.com/tags/bitcoin" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
-            <span class="text-[8px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Trending</span>
-            <h4 class="text-sm font-bold mb-2">Биткоин готовится к закрытию года</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Главная криптовалюта удерживает позиции. Трейдеры ожидают волатильности в новогоднюю ночь...</p>
-        </a>
+    <div id="bg-layer"></div>
 
-        <a href="https://tonkeeper.com/blog/" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
-            <span class="text-[8px] font-black bg-green-500/20 text-green-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Update</span>
-            <h4 class="text-sm font-bold mb-2">Новые функции в кошельке Tonkeeper</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Разработчики обновили интерфейс и добавили поддержку новых токенов для быстрой конвертации...</p>
-        </a>
-    </div>
-</div>
+    <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="p-1.5 bg-blue-600 rounded-lg shadow-lg shadow-blue-600/20">
+                <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" id="main-logo" class="w-5 h-5">
+            </div>
+            <span class="text-lg font-extrabold tracking-tight italic">CRYPTO<span class="text-blue-500 font-black">HUB</span></span>
+        </div>
+        
+        <div class="hidden md:flex flex-col items-center">
+            <span class="text-[7px] uppercase font-black text-slate-500 tracking-[0.2em] mb-0.5">До 2026 года осталось:</span>
+            <div id="countdown" class="text-xs font-mono font-bold text-yellow-500">00:00:00:00</div>
+        </div>
+
+        <div class="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase tracking-widest">
+            v7.3 Live
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
+        
+        <div class="flex gap-2 overflow-x-auto mb-6 pb-2 no-scrollbar">
+            <div class="coin-tab active px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('TON')">TON</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('BTC')">BTC</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('ETH')">ETH</div>
+            <div class="coin-tab px-6 py-3 rounded-2xl glass font-bold text-xs" onclick="selectCoin('SOL')">SOL</div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+            <div class="lg:col-span-2 glass p-8 rounded-[2.5rem] flex flex-col justify-center min-h-[200px] relative overflow-hidden">
+                <p class="text-[10px] text-slate-500 font-black uppercase mb-1 tracking-widest" id="coin-label">TON / USD</p>
+                <div class="flex items-baseline gap-4">
+                    <span id="price-usd" class="text-4xl md:text-6xl font-black text-white">$...</span>
+                    <span id="price-change" class="text-lg font-bold">+0.00%</span>
+                </div>
+                <div id="bg-symbol" class="absolute -right-4 -bottom-8 text-[120px] font-black text-white/[0.02] pointer-events-none uppercase italic">TON</div>
+            </div>
+
+            <div class="glass p-6 rounded-[2.5rem]">
+                <h3 class="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Обмен</h3>
+                <div class="space-y-3">
+                    <div class="input-box p-3 rounded-xl">
+                        <label class="text-[8px] text-slate-500 uppercase font-bold mb-1 block">USD</label>
+                        <input type="number" id="usdIn" value="100" class="bg-transparent w-full text-xl font-bold outline-none">
+                    </div>
+                    <div class="input-box p-3 rounded-xl bg-blue-500/5">
+                        <label class="text-[8px] text-blue-500 uppercase font-bold mb-1 block" id="calc-label">TON Result</label>
+                        <input type="number" id="coinOut" class="bg-transparent w-full text-xl font-bold text-blue-400 outline-none" readonly>
+                    </div>
+                    <button onclick="window.open('https://t.me/wallet')" class="buy-btn w-full py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest text-white shadow-lg mt-2">
+                        Купить сейчас 🎄
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-[2.5rem] border-yellow-500/10">
+                <h3 class="text-[10px] font-black uppercase text-yellow-500 mb-4 tracking-widest">Портфель</h3>
+                <div class="space-y-3">
+                    <div class="input-box p-3 rounded-xl">
+                        <p class="text-[8px] text-slate-500 uppercase font-bold mb-1" id="portfolio-label">У меня есть TON</p>
+                        <input type="number" id="portfolioQty" value="10" class="bg-transparent text-xl font-bold outline-none w-full">
+                    </div>
+                    <div class="p-3 bg-yellow-500/5 rounded-xl border border-yellow-500/20">
+                        <p class="text-[8px] text-yellow-500 uppercase mb-1">Оценка в USD</p>
+                        <p id="portfolioValue" class="text-2xl font-black text-white tracking-tighter">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass rounded-[2.5rem] overflow-hidden p-1 h-[450px] md:h-[550px] mb-6 shadow-2xl">
+            <div id="tradingview_widget" class="h-full w-full"></div>
+        </div>
+
+        <div class="glass rounded-[2.5rem] p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                    News Hub
+                </h3>
+                <span class="text-[10px] text-slate-500 font-bold uppercase">28 Dec 2025</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="https://blog.ton.org/" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
+                    <span class="text-[8px] font-black bg-red-500/20 text-red-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Hot</span>
+                    <h4 class="text-sm font-bold mb-2">Прогноз TON на 2026 год: Ожидания аналитиков</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Эксперты прогнозируют рост экосистемы Telegram Apps и приток новых пользователей в сеть TON...</p>
+                </a>
+                <a href="https://cointelegraph.com/tags/bitcoin" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
+                    <span class="text-[8px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Trending</span>
+                    <h4 class="text-sm font-bold mb-2">Биткоин готовится к закрытию года</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Главная криптовалюта удерживает позиции. Трейдеры ожидают волатильности в новогоднюю ночь...</p>
+                </a>
+                <a href="https://tonkeeper.com/blog/" target="_blank" class="news-card p-5 rounded-3xl bg-white/[0.02] block cursor-pointer">
+                    <span class="text-[8px] font-black bg-green-500/20 text-green-400 px-2 py-0.5 rounded uppercase tracking-widest mb-3 inline-block">Update</span>
+                    <h4 class="text-sm font-bold mb-2">Новые функции в кошельке Tonkeeper</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Разработчики обновили интерфейс и добавили поддержку новых токенов для быстрой конвертации...</p>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        // --- 1. ТАЙМЕР И ФОН ---
+        function updateCountdown() {
+            const diff = new Date('January 1, 2026 00:00:00').getTime() - new Date().getTime();
+            const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+            const el = document.getElementById('countdown');
+            if(el) el.innerHTML = `${d}д ${h}ч ${m}м ${s}с`;
+        }
+        setInterval(updateCountdown, 1000);
+
+        const bgLayer = document.getElementById('bg-layer');
+        const items = ['❄', '❄', '₿', 'TON', '•'];
+        function createFallingItem() {
+            const item = document.createElement('div');
+            item.className = 'falling-item font-black text-white/20';
+            item.innerHTML = items[Math.floor(Math.random() * items.length)];
+            item.style.left = Math.random() * 100 + 'vw';
+            const size = Math.random() * 15 + 10;
+            item.style.fontSize = size + 'px';
+            const dur = Math.random() * 10 + 10;
+            item.style.animationDuration = dur + 's';
+            bgLayer.appendChild(item);
+            setTimeout(() => item.remove(), dur * 1000);
+        }
+        setInterval(createFallingItem, 400);
+
+        // --- 2. ЛОГИКА ТЕРМИНАЛА ---
+        let currentCoin = 'TON', currentPrice = 0;
+        const coinData = { 'TON': 'TONUSDT', 'BTC': 'BTCUSDT', 'ETH': 'ETHUSDT', 'SOL': 'SOLUSDT' };
+        const tvData = { 'TON': 'OKX:TONUSDT', 'BTC': 'BINANCE:BTCUSDT', 'ETH': 'BINANCE:ETHUSDT', 'SOL': 'BINANCE:SOLUSDT' };
+
+        async function updatePrice() {
+            try {
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinData[currentCoin]}`);
+                const data = await res.json();
+                currentPrice = parseFloat(data.lastPrice);
+                document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
+                const change = parseFloat(data.priceChangePercent);
+                const chEl = document.getElementById('price-change');
+                chEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                chEl.style.color = change >= 0 ? '#4ade80' : '#f87171';
+                calculate();
+            } catch (e) { console.error("Price Update Error"); }
+        }
+
+        function selectCoin(coin) {
+            currentCoin = coin;
+            document.querySelectorAll('.coin-tab').forEach(t => t.classList.toggle('active', t.innerText === coin));
+            document.getElementById('coin-label').innerText = `${coin} / USD`;
+            document.getElementById('calc-label').innerText = `${coin} Result`;
+            document.getElementById('portfolio-label').innerText = `У меня есть ${coin}`;
+            document.getElementById('bg-symbol').innerText = coin === 'TON' ? '2026' : coin;
+            
+            new TradingView.widget({
+                "autosize": true, "symbol": tvData[coin], "interval": "H", "theme": "dark", "style": "1", "locale": "ru",
+                "container_id": "tradingview_widget", "backgroundColor": "rgba(5, 8, 15, 1)", "gridColor": "rgba(255, 255, 255, 0.05)",
+                "hide_side_toolbar": true, "allow_symbol_change": false
+            });
+            updatePrice();
+        }
+
+        function calculate() {
+            const usd = document.getElementById('usdIn').value;
+            if (currentPrice > 0) document.getElementById('coinOut').value = (usd / currentPrice).toFixed(4);
+            const qty = document.getElementById('portfolioQty').value;
+            if (currentPrice > 0) document.getElementById('portfolioValue').innerText = `$${(qty * currentPrice).toLocaleString()}`;
+        }
+
+        document.getElementById('usdIn').addEventListener('input', calculate);
+        document.getElementById('portfolioQty').addEventListener('input', calculate);
+        
+        selectCoin('TON');
+        setInterval(updatePrice, 20000);
+    </script>
+</body>
+</html>
