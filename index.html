@@ -2,185 +2,91 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal v8.0 — Minimal Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>My Messenger</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { background-color: #02040a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: #f59e0b; border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
-        .hidden-section { display: none; }
-        
-        /* Снегопад (Elegant) */
-        #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .snowflake { position: absolute; top: -10px; background: white; border-radius: 50%; opacity: 0.3; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(105vh) translateX(20px); } }
+        body {
+            background-color: #0e1621; /* Темная тема как в ТГ */
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        /* Боковая панель с чатами */
+        .sidebar {
+            width: 300px;
+            border-right: 1px solid #17212b;
+            background: #17212b;
+        }
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid #0e1621;
+            cursor: pointer;
+        }
+        .chat-item:hover { background: #2b5278; }
 
-        /* Гирлянда (Subtle) */
-        .garland { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-around; z-index: 100; }
-        .light { width: 4px; height: 12px; border-radius: 2px; animation: blink 2s infinite alternate; }
-        .light-red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-        .light-gold { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; animation-delay: 1s; }
-        @keyframes blink { from { opacity: 0.2; } to { opacity: 1; } }
+        /* Окно чата */
+        .main-chat {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .message {
+            background: #182533;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 60%;
+        }
+        /* Поле ввода */
+        .input-area {
+            padding: 20px;
+            background: #17212b;
+            display: flex;
+        }
+        input {
+            flex-grow: 1;
+            background: #0e1621;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            background: #2b5278;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-    <div class="garland">
-        <div class="light light-red"></div><div class="light light-gold"></div>
-        <div class="light light-red"></div><div class="light light-gold"></div>
-        <div class="light light-red"></div><div class="light light-gold"></div>
+    <div class="sidebar">
+        <div class="chat-item"><b>Избранное</b></div>
+        <div class="chat-item"><b>OSINT Group</b></div>
+        <div class="chat-item"><b>Проекты</b></div>
     </div>
-    <div id="snow"></div>
 
-    <header class="sticky top-0 z-50 glass border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <span class="text-sm font-black tracking-tighter uppercase">TON<span class="text-amber-500">2026</span></span>
-                <nav class="flex gap-1">
-                    <button onclick="switchTab('terminal')" id="btn-terminal" class="tab-btn active px-4 py-2 text-[10px] font-bold uppercase tracking-widest">Терминал</button>
-                    <button onclick="switchTab('catalog')" id="btn-catalog" class="tab-btn px-4 py-2 text-[10px] font-bold uppercase tracking-widest">Каталог</button>
-                </nav>
-            </div>
-            <div class="flex flex-col items-end">
-                <div id="countdown" class="text-[11px] font-mono font-bold text-amber-500">00:00:00:00</div>
-                <span class="text-[7px] text-slate-500 uppercase tracking-widest">Until 2026</span>
-            </div>
+    <div class="main-chat">
+        <div class="messages">
+            <div class="message">Привет! Это твой мессенджер. Код обновлен.</div>
+            <div class="message">Что добавим дальше?</div>
         </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto p-4 md:p-8">
-        
-        <div id="section-terminal" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass p-8 rounded-3xl flex flex-col justify-center min-h-[180px]">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Market Price</span>
-                    <div class="flex items-baseline gap-4">
-                        <h1 id="price-usd" class="text-4xl md:text-6xl font-extrabold tracking-tighter">$...</h1>
-                        <span id="price-change" class="text-lg font-bold">0.00%</span>
-                    </div>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">Calculator</span>
-                    <div class="space-y-3">
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5">
-                            <input type="number" id="usdIn" value="100" class="bg-transparent w-full text-xl font-bold outline-none">
-                            <p class="text-[8px] text-slate-500 uppercase mt-1">USD Amount</p>
-                        </div>
-                        <div class="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-amber-500">
-                            <input type="number" id="coinOut" class="bg-transparent w-full text-xl font-bold outline-none" readonly>
-                            <p class="text-[8px] uppercase mt-1 font-bold">TON Result</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="glass rounded-3xl overflow-hidden h-[450px] md:h-[600px] border border-white/5 shadow-2xl">
-                <div id="tradingview_widget" class="h-full w-full"></div>
-            </div>
+        <div class="input-area">
+            <input type="text" placeholder="Напиши сообщение...">
+            <button>Отправить</button>
         </div>
+    </div>
 
-        <div id="section-catalog" class="hidden-section">
-            <div class="text-center mb-12 py-10">
-                <h2 class="text-2xl font-black uppercase tracking-[0.2em] mb-2 text-amber-500">Service Catalog</h2>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">Профессиональные услуги в экосистеме TON</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="glass p-8 rounded-[2.5rem] border-white/5 hover:border-amber-500/30 transition-all group">
-                    <div class="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all">🤖</div>
-                    <h4 class="text-sm font-black uppercase tracking-widest mb-3">Telegram Architecture</h4>
-                    <p class="text-[11px] text-slate-400 leading-relaxed mb-8">Разработка высоконагруженных Telegram-ботов на Python (aiogram). Чистый код, база данных и быстрый деплой.</p>
-                    <button onclick="order('Telegram Bot')" class="w-full py-4 bg-white/5 hover:bg-amber-500 hover:text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">Заказать — 15 TON</button>
-                </div>
-                <div class="glass p-8 rounded-[2.5rem] border-white/5 hover:border-amber-500/30 transition-all group">
-                    <div class="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all">💎</div>
-                    <h4 class="text-sm font-black uppercase tracking-widest mb-3">Digital Assets (NFT)</h4>
-                    <p class="text-[11px] text-slate-400 leading-relaxed mb-8">Консультации по NFT-подаркам, аналитика редких юзернеймов и помощь в безопасных сделках на Fragment.</p>
-                    <button onclick="order('NFT Consultation')" class="w-full py-4 bg-white/5 hover:bg-amber-500 hover:text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">Заказать — 2 TON</button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-        // --- 1. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
-        function switchTab(tab) {
-            const sections = {
-                terminal: document.getElementById('section-terminal'),
-                catalog: document.getElementById('section-catalog')
-            };
-            const buttons = {
-                terminal: document.getElementById('btn-terminal'),
-                catalog: document.getElementById('btn-catalog')
-            };
-
-            Object.keys(sections).forEach(key => {
-                sections[key].classList.add('hidden-section');
-                buttons[key].classList.remove('active');
-            });
-
-            sections[tab].classList.remove('hidden-section');
-            buttons[tab].classList.add('active');
-        }
-
-        // --- 2. НОВОГОДНИЕ ЭФФЕКТЫ ---
-        function createSnow() {
-            const snow = document.getElementById('snow');
-            for(let i=0; i<40; i++) {
-                const s = document.createElement('div');
-                s.className = 'snowflake';
-                const size = Math.random() * 3 + 1 + 'px';
-                s.style.width = size; s.style.height = size;
-                s.style.left = Math.random() * 100 + 'vw';
-                s.style.animationDuration = Math.random() * 5 + 10 + 's';
-                s.style.animationDelay = Math.random() * 5 + 's';
-                snow.appendChild(s);
-            }
-        }
-        createSnow();
-
-        function updateCountdown() {
-            const diff = new Date('January 1, 2026 00:00:00').getTime() - new Date().getTime();
-            const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('countdown').innerHTML = `${d}д ${h}ч ${m}м ${s}с`;
-        }
-        setInterval(updateCountdown, 1000);
-
-        // --- 3. ЦЕНЫ И ГРАФИК ---
-        let currentPrice = 0;
-        async function updatePrice() {
-            try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=TONUSDT');
-                const data = await res.json();
-                currentPrice = parseFloat(data.lastPrice);
-                document.getElementById('price-usd').innerText = `$${currentPrice.toLocaleString()}`;
-                const ch = parseFloat(data.priceChangePercent);
-                const chEl = document.getElementById('price-change');
-                chEl.innerText = `${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%`;
-                chEl.className = `text-lg font-bold ${ch >= 0 ? 'text-green-500' : 'text-red-500'}`;
-                calculate();
-            } catch (e) {}
-        }
-
-        function calculate() {
-            const usd = document.getElementById('usdIn').value;
-            if (currentPrice > 0) document.getElementById('coinOut').value = (usd / currentPrice).toFixed(4);
-        }
-
-        new TradingView.widget({
-            "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "style": "1", "container_id": "tradingview_widget",
-            "backgroundColor": "#02040a", "gridColor": "rgba(255, 255, 255, 0.03)", "hide_side_toolbar": true
-        });
-
-        function order(service) {
-            window.open(`https://t.me/ТВОЙ_НИК?text=Заказ: ${service}`, '_blank');
-        }
-
-        document.getElementById('usdIn').addEventListener('input', calculate);
-        updatePrice(); setInterval(updatePrice, 15000);
-    </script>
 </body>
 </html>
