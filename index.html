@@ -3,121 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Arctic God Mode 2026</title>
+    <title>TON Terminal 2026 — Syndicate Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background-color: #010409; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.03); }
+        .glass { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.03); }
         .input-box { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.08); }
         .buy-btn { background: linear-gradient(135deg, #0070f3 0%, #00a6ed 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .buy-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 112, 243, 0.5); }
+        .buy-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(0, 112, 243, 0.5); }
         .nav-tab.active { background: rgba(0, 112, 243, 0.15); border: 1px solid #0070f3; color: #0070f3; }
         
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         .falling-item { position: absolute; top: -50px; opacity: 0.3; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-        .garland { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; display: flex; justify-content: space-around; pointer-events: none; }
-        .bulb { width: 10px; height: 10px; border-radius: 50%; animation: blink 1.5s infinite alternate; margin-top: 5px; }
-        @keyframes blink { 0% { opacity: 0.2; box-shadow: 0 0 2px currentColor; } 100% { opacity: 1; box-shadow: 0 0 15px currentColor; } }
-
-        /* Анимация Джекпота */
-        @keyframes jackpot-flare {
-            0% { filter: brightness(1) drop-shadow(0 0 0px gold); }
-            50% { filter: brightness(2) drop-shadow(0 0 50px gold); }
-            100% { filter: brightness(1) drop-shadow(0 0 0px gold); }
-        }
-        .jackpot-active { animation: jackpot-flare 0.5s infinite; }
+        #admin-sidebar { position: fixed; right: -350px; top: 0; width: 320px; height: 100%; z-index: 1000; transition: right 0.4s ease; }
+        #admin-sidebar.open { right: 0; }
         
-        #admin-sidebar { position: fixed; left: -350px; top: 0; width: 320px; height: 100%; z-index: 1000; transition: left 0.4s ease; }
-        #admin-sidebar.open { left: 0; }
+        .news-ticker { animation: scrollNews 40s linear infinite; white-space: nowrap; }
+        @keyframes scrollNews { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
 </head>
 <body class="min-h-screen pb-24">
 
     <div id="snow-bg"></div>
-    <div class="garland">
-        <div class="bulb" style="color: #ff0000; background: #ff0000;"></div>
-        <div class="bulb" style="color: #00ff00; background: #00ff00; animation-delay: 0.2s"></div>
-        <div class="bulb" style="color: #00ffff; background: #00ffff; animation-delay: 0.4s"></div>
-    </div>
 
     <div id="custom-modal" class="fixed inset-0 bg-black/90 z-[3000] hidden items-center justify-center p-6">
         <div class="glass p-10 rounded-[3rem] max-w-sm w-full text-center border-blue-500/10">
-            <div id="modal-icon" class="text-7xl mb-6">🐧</div>
-            <h3 id="modal-title" class="text-2xl font-black uppercase mb-4 text-blue-400">Уведомление</h3>
+            <div id="modal-icon" class="text-7xl mb-6">🔔</div>
+            <h3 id="modal-title" class="text-2xl font-black uppercase mb-4 text-blue-400">Система</h3>
             <p id="modal-text" class="text-sm text-slate-400 mb-10 font-medium"></p>
-            <button id="modal-main-btn" class="buy-btn w-full py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest">Ок</button>
+            <button id="modal-main-btn" onclick="closeCustomModal()" class="buy-btn w-full py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest text-white">Понятно</button>
         </div>
     </div>
 
     <div id="password-modal" class="fixed inset-0 bg-black/98 z-[2500] hidden items-center justify-center p-4">
         <div class="glass p-12 rounded-[4rem] max-w-sm w-full text-center border-blue-500/20">
-            <h3 class="text-xl font-black uppercase mb-8 text-blue-500">Admin Login</h3>
+            <h3 class="text-xl font-black uppercase mb-8 text-blue-500 tracking-widest">Admin Login</h3>
             <input type="password" id="admin-pin-input" maxlength="4" class="input-box w-full py-6 rounded-3xl text-4xl font-black text-center outline-none mb-10 text-white tracking-[0.5em]" placeholder="****">
-            <button onclick="checkAdminPassword()" class="buy-btn w-full py-5 rounded-2xl font-black text-[10px] uppercase">Войти</button>
+            <button onclick="checkAdminPassword()" class="buy-btn w-full py-5 rounded-2xl font-black text-[10px] uppercase text-white">Авторизация</button>
         </div>
     </div>
 
-    <div id="admin-sidebar" class="glass border-r border-blue-500/20 p-8 flex flex-col shadow-2xl overflow-y-auto">
-        <h3 class="text-2xl font-black uppercase text-blue-500 mb-10 italic">God Mode</h3>
+    <div id="admin-sidebar" class="glass border-l border-blue-500/20 p-8 flex flex-col shadow-2xl overflow-y-auto">
+        <h3 class="text-2xl font-black uppercase text-blue-500 mb-10 italic">Control Hub</h3>
         <div class="space-y-8">
             <div class="p-4 bg-white/5 rounded-2xl">
-                <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block">Множитель удачи (Chance)</label>
+                <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block">Множитель Джекпота</label>
                 <input type="number" id="chance-multiplier" value="1" class="input-box w-full p-3 rounded-xl text-xl font-bold text-blue-400 outline-none" oninput="saveChance()">
-                <p class="text-[8px] mt-2 text-slate-600">x1 - стандарт, x100000 - всегда джекпот</p>
             </div>
-            <button onclick="adminAddMoney()" class="w-full bg-blue-600/10 border border-blue-500/20 py-4 rounded-xl text-xs font-black uppercase text-blue-400">➕ 1000 UAH</button>
+            <button onclick="adminAddMoney()" class="w-full bg-blue-600/10 border border-blue-600/20 py-4 rounded-xl text-xs font-black uppercase text-blue-400">➕ 1000 UAH</button>
             <div id="sidebar-pending-list" class="space-y-4"></div>
         </div>
-        <button onclick="toggleSidebar()" class="mt-auto pt-8 text-slate-600 font-black uppercase text-[10px]">Выход</button>
+        <button onclick="toggleSidebar()" class="mt-auto pt-8 text-slate-600 font-black uppercase text-[10px]">Закрыть панель</button>
     </div>
 
     <nav class="border-b border-white/5 py-5 px-6 md:px-10 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-2"><span class="text-xl font-black italic tracking-tighter uppercase">Ton<span class="text-blue-500">Terminal</span></span></div>
+        <div class="flex items-center gap-2"><span class="text-xl font-black italic tracking-tighter uppercase text-white">Ton<span class="text-blue-500">Terminal</span></span></div>
         <div class="flex items-center gap-3">
-            <div class="text-right glass px-5 py-2 rounded-2xl border border-white/5"><p id="balance-display" class="text-sm font-black text-green-400">0.00 грн</p></div>
-            <button onclick="handleDepositBtnClick()" class="bg-blue-600 p-2.5 rounded-xl">➕</button>
+            <div onclick="handleAdminEntry()" class="text-right glass px-5 py-2 rounded-2xl border border-white/5 cursor-pointer hover:border-blue-500/30 transition-all shadow-inner">
+                <p id="balance-display" class="text-sm font-black text-green-400 tracking-tight">0.00 грн</p>
+            </div>
+            <button onclick="openModal('deposit-modal')" class="bg-blue-600 p-2.5 rounded-xl text-white">➕</button>
         </div>
     </nav>
 
+    <div class="bg-blue-600/10 py-2 border-b border-white/5 overflow-hidden">
+        <div id="news-line" class="news-ticker text-[10px] font-bold uppercase tracking-widest text-blue-400">
+            Биткоин обновляет максимумы • Тон Терминал запущен в режиме Syndicate • Счастливые часы в лотерее начались...
+        </div>
+    </div>
+
     <main class="max-w-7xl mx-auto p-5 md:p-10 relative z-10">
-        <div class="flex justify-center gap-4 mb-12">
-            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase">📈 Маркет</button>
-            <button onclick="showTab('shop')" id="btn-shop" class="nav-tab glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase">🛍️ Магазин</button>
-            <button onclick="showTab('lotto')" id="btn-lotto" class="nav-tab glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase">🎁 Лото</button>
+        <div class="flex justify-center gap-4 mb-12 overflow-x-auto pb-2">
+            <button onclick="showTab('main')" id="btn-main" class="nav-tab active glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">📈 Рынок</button>
+            <button onclick="showTab('shop')" id="btn-shop" class="nav-tab glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">🛍️ Покупка</button>
+            <button onclick="showTab('lotto')" id="btn-lotto" class="nav-tab glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">🐧 Лото</button>
+            <button onclick="showTab('earn')" id="btn-earn" class="nav-tab glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">💰 Заработок</button>
         </div>
 
-        <div id="view-main" class="space-y-12">
+        <div id="view-main" class="space-y-10">
             <div class="glass p-8 rounded-[3.5rem] overflow-hidden border border-white/5"><div id="tradingview_widget" class="h-[480px] w-full rounded-2xl"></div></div>
             <div class="glass p-12 rounded-[4rem] border border-blue-500/5">
-                <h3 class="text-center text-[10px] font-black uppercase mb-12 tracking-[0.4em] text-blue-400">Глобальный поиск 🌍</h3>
-                <input type="text" id="global-search" placeholder="BTC, ETH, SOL..." class="input-box w-full p-7 rounded-[2.5rem] text-2xl font-extrabold outline-none text-center shadow-2xl" oninput="searchAllCoins()">
-                <div id="search-results" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-12 max-h-[600px] overflow-y-auto"></div>
+                <h3 class="text-center text-[10px] font-black uppercase mb-10 tracking-[0.4em] text-blue-400">Поиск монет мира (15,000+)</h3>
+                <input type="text" id="global-search" placeholder="Название или тикер..." class="input-box w-full p-7 rounded-[2.5rem] text-2xl font-extrabold outline-none text-center shadow-2xl text-white" oninput="searchAllCoins()">
+                <div id="search-results" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-12 max-h-[600px] overflow-y-auto p-2"></div>
             </div>
         </div>
 
-        <div id="view-shop" class="hidden">
-            <div class="max-w-4xl mx-auto glass p-12 rounded-[4rem] border border-blue-500/5 text-center shadow-2xl">
-                <h3 class="text-3xl font-black uppercase mb-4 italic text-blue-500">Terminal Shop</h3>
-                <p class="text-slate-500 text-[10px] uppercase font-bold mb-16 tracking-[0.4em]">Актуальные котировки в реальном времени</p>
-                <button onclick="loadEverything()" id="load-all-btn" class="buy-btn px-12 py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl mb-12">🚀 Загрузить 15,000+ монет</button>
-                <div id="full-coin-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 max-h-[800px] overflow-y-auto"></div>
+        <div id="view-shop" class="hidden text-center">
+            <div class="max-w-4xl mx-auto glass p-12 rounded-[4rem] border border-blue-500/5 shadow-2xl">
+                <h3 class="text-3xl font-black uppercase mb-4 italic text-blue-500">Fast Purchase</h3>
+                <p class="text-slate-500 text-[10px] uppercase font-bold mb-16 tracking-[0.4em]">Итоговый курс терминала без скрытых сборов</p>
+                <button onclick="loadEverything()" id="load-all-btn" class="buy-btn px-12 py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl mb-12 text-white">🚀 Загрузить весь список</button>
+                <div id="full-coin-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 max-h-[800px] overflow-y-auto p-2"></div>
             </div>
         </div>
 
         <div id="view-lotto" class="hidden text-center">
             <div class="glass p-20 rounded-[5rem] max-w-3xl mx-auto border border-blue-500/10 shadow-2xl">
                 <div id="lotto-stage">
-                    <h2 class="text-4xl font-black mb-16 uppercase italic text-blue-400">Lotto <span class="text-white">Penguin</span></h2>
-                    <div id="box-anim" class="text-[12rem] my-16 cursor-pointer hover:scale-110 transition-transform">🐧</div>
-                    <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-20 py-7 rounded-[2.5rem] font-black text-xl uppercase tracking-widest">Открыть (350 грн)</button>
+                    <h2 class="text-5xl font-black mb-12 uppercase italic text-blue-400">Arctic <span class="text-white">Lotto</span></h2>
+                    <div id="box-anim" class="text-[14rem] my-16 cursor-pointer hover:scale-105 transition-transform">🐧</div>
+                    <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-20 py-7 rounded-[2.5rem] font-black text-xl uppercase shadow-2xl tracking-widest text-white">Открыть (350 грн)</button>
+                    <button onclick="getDailyBonus()" id="bonus-btn" class="block mx-auto mt-10 text-xs font-black uppercase text-blue-500 border-b border-blue-500/20 hover:text-white transition-colors">🎁 Забрать ежедневный бонус</button>
                 </div>
                 <div id="prize-reveal" class="hidden flex-col items-center py-16">
-                    <div id="prize-icon" class="text-[11rem] mb-10">🎁</div>
-                    <div id="prize-value" class="text-7xl font-black text-yellow-500 mb-12">0 грн</div>
+                    <div id="prize-icon" class="text-[11rem] mb-10">🍭</div>
+                    <div id="prize-value" class="text-7xl font-black text-yellow-500 mb-12 tracking-tighter">0 грн</div>
                     <button onclick="resetLotto()" class="text-[10px] font-black uppercase text-slate-500 hover:text-white tracking-widest">Забрать</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-earn" class="hidden text-center">
+            <div class="max-w-2xl mx-auto glass p-16 rounded-[4rem] border border-blue-500/10">
+                <div class="text-6xl mb-8">🤝</div>
+                <h2 class="text-4xl font-black mb-6 uppercase text-blue-400">Система рефералов</h2>
+                <p class="text-slate-400 text-sm mb-12 leading-relaxed">Приглашайте друзей и получайте <span class="text-white font-bold">3%</span> от всех их покупок в терминале прямо на ваш основной баланс.</p>
+                <div class="input-box p-6 rounded-2xl flex items-center justify-between gap-4">
+                    <span class="text-[10px] font-mono text-slate-500">ton-terminal.pro/ref?id=49210</span>
+                    <button onclick="openCustomModal('🔗 СКОПИРОВАНО', 'Ваша партнерская ссылка успешно скопирована в буфер обмена.', 'info')" class="bg-blue-600/20 text-blue-400 px-6 py-2 rounded-xl text-[10px] font-black uppercase">Копировать</button>
                 </div>
             </div>
         </div>
@@ -128,11 +135,12 @@
             <h3 class="text-2xl font-black uppercase mb-10 text-blue-500">Пополнить</h3>
             <input type="number" id="dep-input" value="1000" class="input-box p-6 rounded-3xl w-full text-4xl font-black text-center mb-10 outline-none text-white">
             <div class="flex gap-4 mb-12">
-                <button onclick="showDetails('Card')" class="flex-1 bg-white/5 border border-white/5 p-5 rounded-2xl text-[10px] font-bold uppercase">Карта</button>
-                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 border border-white/5 p-5 rounded-2xl text-[10px] font-bold uppercase">Крипта</button>
+                <button onclick="showDetails('Card')" class="flex-1 bg-white/5 border border-white/5 p-5 rounded-2xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Карта</button>
+                <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 border border-white/5 p-5 rounded-2xl text-[10px] font-bold uppercase hover:bg-blue-600 transition-all text-white">Крипта</button>
             </div>
-            <div id="pay-details" class="hidden bg-black/60 p-6 rounded-2xl mb-10 text-[11px] font-mono break-all text-blue-400"></div>
-            <button onclick="confirmDeposit()" class="w-full buy-btn py-6 rounded-[2rem] font-black text-xs uppercase tracking-widest">Я оплатил</button>
+            <div id="pay-details" class="hidden bg-black/60 p-6 rounded-2xl mb-10 text-[11px] font-mono break-all text-blue-400 text-left"></div>
+            <button onclick="confirmDeposit()" class="w-full buy-btn py-6 rounded-[2rem] font-black text-xs uppercase tracking-widest text-white">Я оплатил</button>
+            <button onclick="closeModal('deposit-modal')" class="text-slate-600 font-bold uppercase text-[9px] mt-6">Назад</button>
         </div>
     </div>
 
@@ -144,7 +152,7 @@
         let allCoins = [];
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
         let pendingList = JSON.parse(localStorage.getItem('pending_list')) || [];
-        let depBtnClicks = 0;
+        let adminClicks = 0;
         let currentAdminPassword = "";
         let winMultiplier = parseFloat(localStorage.getItem('win_multiplier')) || 1;
 
@@ -152,160 +160,4 @@
         function syncPassword() {
             const now = new Date();
             const seed = now.getUTCDate() + now.getUTCHours() + 2026;
-            currentAdminPassword = ((seed * 17) % 9000 + 1000).toString();
-        }
-        syncPassword(); setInterval(syncPassword, 60000);
-
-        function handleDepositBtnClick() {
-            depBtnClicks++;
-            if (depBtnClicks >= 3) { openModal('password-modal'); depBtnClicks = 0; }
-            else { setTimeout(() => { if(depBtnClicks > 0 && depBtnClicks < 3) openModal('deposit-modal'); depBtnClicks = 0; }, 250); }
-        }
-
-        function checkAdminPassword() {
-            if (document.getElementById('admin-pin-input').value === currentAdminPassword) {
-                closeModal('password-modal'); toggleSidebar();
-            } else { alert("Error."); }
-            document.getElementById('admin-pin-input').value = "";
-        }
-
-        function saveChance() {
-            winMultiplier = parseFloat(document.getElementById('chance-multiplier').value) || 1;
-            localStorage.setItem('win_multiplier', winMultiplier);
-        }
-
-        function updateUI() {
-            document.getElementById('balance-display').innerText = balance.toFixed(2) + " грн";
-            localStorage.setItem('user_balance', balance);
-        }
-
-        function adminAddMoney() { balance += 1000; updateUI(); }
-        function toggleSidebar() { 
-            const s = document.getElementById('admin-sidebar');
-            s.style.left = s.style.left === '0px' ? '-350px' : '0px';
-            document.getElementById('chance-multiplier').value = winMultiplier;
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const l = document.getElementById('sidebar-pending-list');
-            l.innerHTML = pendingList.length ? pendingList.map((d, i) => `
-                <div class="bg-white/5 p-4 rounded-2xl flex justify-between items-center border border-white/5">
-                    <p class="text-sm font-black text-blue-500">${d.amount} грн</p>
-                    <button onclick="approveDep(${i})" class="bg-green-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase">OK</button>
-                </div>`).join('') : '<p class="text-center text-slate-700 text-[8px] font-black uppercase">No Requests</p>';
-        }
-
-        function approveDep(i) {
-            balance += parseFloat(pendingList[i].amount); pendingList.splice(i, 1);
-            localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            updateUI(); renderSidebar();
-        }
-
-        // ЛОТО С ДИНАМИЧЕСКИМИ СМАЙЛИКАМИ
-        function playLotto() {
-            if (balance < 350) return alert("Мало грн!");
-            balance -= 350; updateUI();
-            const b = document.getElementById('box-anim');
-            b.classList.add('animate-pulse');
-            
-            setTimeout(() => {
-                b.classList.remove('animate-pulse');
-                document.getElementById('lotto-stage').classList.add('hidden');
-                const r = document.getElementById('prize-reveal');
-                const icon = document.getElementById('prize-icon');
-                r.classList.remove('hidden'); r.classList.add('flex');
-                
-                const rand = Math.random() * 100;
-                let win = 50;
-                let iconEmoji = "🍭";
-
-                // Применяем множитель удачи из админки
-                if (rand <= (0.0001 * winMultiplier)) { 
-                    win = 2500; iconEmoji = "❄️👑"; 
-                    icon.classList.add('jackpot-active');
-                } else if (rand <= (0.05 * winMultiplier)) { 
-                    win = 1000; iconEmoji = "👑"; 
-                } else if (rand <= (3.0 * winMultiplier)) { 
-                    win = 400; iconEmoji = "💰"; 
-                } else if (rand <= (15.0 * winMultiplier)) { 
-                    win = 275; iconEmoji = "🐟"; 
-                }
-
-                balance += win; updateUI();
-                document.getElementById('prize-value').innerText = win + " грн";
-                icon.innerText = iconEmoji;
-                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ЛОТО: "+win+" UAH (Emoji: "+iconEmoji+")")}`);
-            }, 2000);
-        }
-
-        function resetLotto() {
-            document.getElementById('lotto-stage').classList.remove('hidden');
-            document.getElementById('prize-reveal').classList.add('hidden');
-            document.getElementById('prize-icon').classList.remove('jackpot-active');
-        }
-
-        // API & TOOLS
-        async function initGlobalCrypto() {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
-                allCoins = await res.json();
-                displayCoins(allCoins.slice(0, 30), 'search-results');
-            } catch (e) {}
-        }
-
-        function displayCoins(list, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = list.map(c => `
-                <div onclick="purchaseCoin('${c.id}', '${c.symbol.toUpperCase()}')" class="glass p-5 rounded-2xl border border-white/5 text-center cursor-pointer hover:border-blue-500 transition-all">
-                    <p class="text-[7px] text-slate-600 font-black uppercase mb-1">${c.symbol}</p>
-                    <p class="text-[12px] font-black text-blue-500 truncate">${c.name}</p>
-                </div>`).join('');
-        }
-
-        async function purchaseCoin(id, symbol) {
-            const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`);
-            const data = await res.json();
-            const terminalPrice = (data[id].usd * 42.5 * 1.075).toFixed(2);
-            if (confirm(`Исполнить ордер на ${symbol}?\nКурс: ${terminalPrice} грн`)) {
-                if (balance < terminalPrice) return alert("Недостаточно средств.");
-                balance -= terminalPrice; updateUI();
-                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 КУПИЛИ: " + symbol + " (" + terminalPrice + " грн)")}`);
-                alert("Ордер принят.");
-            }
-        }
-
-        function loadEverything() {
-            displayCoins(allCoins, 'full-coin-grid');
-            document.getElementById('load-all-btn').style.display = 'none';
-        }
-
-        function searchAllCoins() {
-            const q = document.getElementById('global-search').value.toLowerCase();
-            const filtered = allCoins.filter(c => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q)).slice(0, 48);
-            displayCoins(filtered, 'search-results');
-        }
-
-        function confirmDeposit() {
-            const a = document.getElementById('dep-input').value;
-            pendingList.push({ amount: a }); localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: "+a+" грн")}`);
-            closeModal('deposit-modal'); alert("Заявка отправлена.");
-        }
-
-        function showTab(t) { ['main','shop','lotto'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t)); ['btn-main','btn-shop','btn-lotto'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t)); }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-        function showDetails(m) { const d = document.getElementById('pay-details'); d.classList.remove('hidden'); d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz"; }
-
-        initGlobalCrypto(); updateUI();
-        setInterval(() => {
-            const el = document.createElement('div'); el.className = 'falling-item';
-            el.innerText = ['❄', '₿', 'Ξ', '🐧'][Math.floor(Math.random()*4)];
-            el.style.left = Math.random() * 100 + 'vw'; el.style.animationDuration = (Math.random()*8+4)+'s';
-            document.getElementById('snow-bg').appendChild(el); setTimeout(() => el.remove(), 10000);
-        }, 500);
-        new TradingView.widget({ "autosize": true, "symbol": "OKX:TONUSDT", "interval": "H", "theme": "dark", "container_id": "tradingview_widget", "backgroundColor": "#010409" });
-    </script>
-</body>
-</html>
+            currentAdminPassword = ((
